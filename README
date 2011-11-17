@@ -1,14 +1,35 @@
-Installing this library for your Arduino development environment:
+Introduction
+============
 
-  First, cd into your Arduino libraries/ directory. Then...
+Here's the blog post that started it all:
 
-  - If you think you might contribute improvements back to the project,
-    git clone git@github.com:sowbug/G35Arduino.git
-  - Otherwise, just unzip the project.
+  http://www.deepdarc.com/2010/11/27/hacking-christmas-lights/
 
-Then restart your Arduino IDE and you should see G35Arduino among the libraries.
+Installation
+============
 
-Based on Christmas Light Control by Robert Quattlebaum <darco@deepdarc.com>
-(http://www.deepdarc.com/2010/11/27/hacking-christmas-lights)
-and Arduino adaptation by Scott Harris <scottrharris@gmail.com>
-http://scottrharris.blogspot.com/2010/12/controlling-ge-color-effects-lights.html
+Find your Arduino IDE's libraries directory. Then unzip the project
+archive into it. It should end up looking like this:
+
+[Your Arduino documents directory]/
+  libraries/
+    G35Arduino/
+      G35.h (etc.)
+
+Then restart your Arduino IDE and you should see G35Arduino among
+the libraries.
+
+If you think you might contribute improvements back to the project,
+git clone into libraries/ instead of unzipping. We look forward to
+your pull requests!
+
+Credits
+=======
+
+- Paul Martis: http://www.digitalmisery.com
+
+- Robert Quattlebaum: http://www.deepdarc.com/2010/11/27/hacking-christmas-lights
+
+- Scott Harris: http://scottrharris.blogspot.com/2010/12/controlling-ge-color-effects-lights.html
+
+- Mike Tsao: http://github.com/sowbug
