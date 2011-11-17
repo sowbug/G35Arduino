@@ -1,0 +1,7 @@
+GEColorEffects	KEYWORD1
+set_color	KEYWORD2
+color		KEYWORD2
+color_hue	KEYWORD2
+fill_color	KEYWORD2
+fill_color_same	KEYWORD2
+enumerate	KEYWORD2
