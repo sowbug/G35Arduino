@@ -1,3 +1,13 @@
+Installing this library for your Arduino development environment:
+
+  First, cd into your Arduino libraries/ directory. Then...
+
+  - If you think you might contribute improvements back to the project,
+    git clone git@github.com:sowbug/G35Arduino.git
+  - Otherwise, just unzip the project.
+
+Then restart your Arduino IDE and you should see G35Arduino among the libraries.
+
 Based on Christmas Light Control by Robert Quattlebaum <darco@deepdarc.com>
 (http://www.deepdarc.com/2010/11/27/hacking-christmas-lights)
 and Arduino adaptation by Scott Harris <scottrharris@gmail.com>
