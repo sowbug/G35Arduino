@@ -1,7 +1,12 @@
 #include <G35.h>
 
-#define OUT_PIN 19      // Arduino pin #
-#define LIGHT_COUNT 50  // Total # of lights on string (usually 50, 48, or 36)
+// Arduino pin number. Pin 13 will blink the on-board LED.
+#define OUT_PIN 13
+
+// Total # of lights on string (usually 50, 48, or 36). Maximum is 63,
+// because the protocol uses 6-bit addressing and bulb #63 is reserved
+// for broadcast messages.
+#define LIGHT_COUNT 50
 
 static uint16_t c;
 
