@@ -98,19 +98,21 @@ void G35::fill_color(uint8_t begin, uint8_t count,
   }
 }
 
-// Make all LEDs the same color
-void G35::fill_color_same(uint8_t begin, uint8_t count,
-                          uint8_t intensity, color_t color) {
-  while (count--)  {  
-    set_color(0, intensity, color);
+// Initialize string for individual bulb addressing
+void G35::enumerate(bool reverse) {
+  uint8_t count = _light_count;
+  uint8_t bulb = reverse ? _light_count - 1 : 0;
+  int8_t delta = reverse ? -1 : 1;
+  while (count--) {
+    set_color(bulb, DEFAULT_INTENSITY, COLOR_BLACK);
+    bulb += delta;
   }
 }
 
-// Initialize string for individual bulb addressing
-void G35::enumerate() {
-  uint8_t i;
-  while (i < _light_count) {
-    fill_color(0, _light_count, DEFAULT_INTENSITY, COLOR_BLACK);  
-    ++i;
-  }
+void G35::enumerate_forward() {
+  enumerate(false);
+}
+
+void G35::enumerate_reverse() {
+  enumerate(true);
 }

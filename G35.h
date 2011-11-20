@@ -47,12 +47,10 @@ class G35 {
   void fill_color(uint8_t begin, uint8_t count, uint8_t intensity,
                   color_t color);
 
-  // Make all LEDs the same color
-  void fill_color_same(uint8_t begin, uint8_t count, uint8_t intensity,
-                       color_t color);
-
   // Need to enumerate in order to address individual LEDs
-  void enumerate();
+  void enumerate(bool reverse=false);
+  void enumerate_forward();
+  void enumerate_reverse();
  private:
   // Low-level one-wire protocol commands
   void begin();
