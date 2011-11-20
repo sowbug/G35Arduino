@@ -33,10 +33,10 @@
 
 class G35 {
  public:
-  // Arduino Pin # and total lights on string
+  // Arduino pin # and total lights on string
   G35(int pin, int light_count);
 
-  // Turn on a specific LED
+  // Turn on a specific LED with a color and brightness
   void set_color(uint8_t led, uint8_t intensity, color_t color);
 
   // Color data type
@@ -44,14 +44,18 @@ class G35 {
 
   color_t color_hue(uint8_t h);
 
+  // Make all LEDs the same color starting at specified beginning LED
   void fill_color(uint8_t begin, uint8_t count, uint8_t intensity,
                   color_t color);
 
-  // Need to enumerate in order to address individual LEDs
-  void enumerate(bool reverse=false);
+  // Initialize lights by giving them each an address. enumerate_forward()
+  // gives the bulb closest to the controller #0, and enumerate_reverse()
+  // gives #0 to the farthest bulb.
   void enumerate_forward();
   void enumerate_reverse();
  private:
+  void enumerate(bool reverse=false);
+
   // Low-level one-wire protocol commands
   void begin();
   void one();
