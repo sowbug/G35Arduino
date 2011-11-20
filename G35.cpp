@@ -73,12 +73,21 @@ void G35::set_color(uint8_t led, uint8_t intensity, color_t color) {
   end();
 }
 
+bool G35::set_color_if_in_range(uint8_t position, uint8_t intensity,
+				color_t color) {
+  if (position >= _light_count) {
+    return false;
+  }
+  set_color(position, intensity, color);
+  return true;
+}
+
+
 // Returns 12-bit color from red, green, and blue components
 color_t G35::color(uint8_t r, uint8_t g, uint8_t b) {
   return COLOR(r, g, b);
 }
 
-// Returns primary hue colors
 color_t G35::color_hue(uint8_t h) {
   switch (h >> 4) {
   case 0:     h -= 0; return color(h, CHANNEL_MAX, 0);
@@ -97,12 +106,18 @@ void G35::fill_color(uint8_t begin, uint8_t count,
   }
 }
 
+void G35::fill_random_max(uint8_t begin, uint8_t count, uint8_t intensity) {
+  while (count--) {
+    set_color(begin++, intensity, max_color(rand()));
+  }
+}
+
 void G35::enumerate(bool reverse) {
   uint8_t count = _light_count;
   uint8_t bulb = reverse ? _light_count - 1 : 0;
   int8_t delta = reverse ? -1 : 1;
   while (count--) {
-    set_color(bulb, DEFAULT_INTENSITY, COLOR_BLACK);
+    set_color(bulb, MAX_INTENSITY, COLOR_BLACK);
     bulb += delta;
   }
 }
@@ -113,4 +128,71 @@ void G35::enumerate_forward() {
 
 void G35::enumerate_reverse() {
   enumerate(true);
+}
+
+void G35::test_patterns() {
+  fill_color(0, _light_count, 0, rainbow_color(RB_FIRST));
+  fade_in(1);
+  for (uint8_t i = RB_FIRST; i <= RB_LAST; ++i) {
+    delay(250);
+    fill_color(0, _light_count, MAX_INTENSITY, rainbow_color(i));
+  }
+  fade_out(1);
+  fill_color(0, _light_count, MAX_INTENSITY, COLOR_BLACK);
+}
+
+color_t G35::rainbow_color(uint8_t color) {
+  if (color >= RB_COUNT) {
+    color = color % RB_COUNT;
+  }
+  switch (color) {
+  case RB_RED:
+    return COLOR_RED;
+  case RB_ORANGE:
+    return COLOR_ORANGE;
+  case RB_YELLOW:
+    return COLOR_YELLOW;
+  case RB_GREEN:
+    return COLOR_GREEN;
+  case RB_BLUE:
+    return COLOR_BLUE;
+  case RB_INDIGO:
+    return COLOR_INDIGO;
+  case RB_VIOLET:
+    return COLOR_VIOLET;
+  }
+}
+
+color_t G35::max_color(uint8_t color) {
+  if (color >= 6) {
+    color = color % 6;
+  }
+  switch (color) {
+  case 0:
+    return COLOR_RED;
+  case 1:
+    return COLOR_GREEN;
+  case 2:
+    return COLOR_BLUE;
+  case 3:
+    return COLOR_CYAN;
+  case 4:
+    return COLOR_MAGENTA;
+  case 5:
+    return COLOR_YELLOW;
+  }
+}
+
+void G35::fade_in(uint8_t delay_msec) {
+  for (int i = 0; i <= MAX_INTENSITY; ++i) {
+    set_color(63, i, COLOR_BLACK);
+    delay(delay_msec);
+  }
+}
+
+void G35::fade_out(uint8_t delay_msec) {
+  for (int i = MAX_INTENSITY; i >= 0; --i) {
+    set_color(63, i, COLOR_BLACK);
+    delay(delay_msec);
+  }
 }
