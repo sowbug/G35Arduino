@@ -1,7 +1,7 @@
 // By Mike Tsao <github.com/sowbug>
 //
-// StockPlus: A Sunday afternoon's worth of work duplicating the stock
-// G-35 controller programs, plus a couple extra thrown in for fun. Some are
+// StockPlus: A Sunday afternoon's worth of work duplicating the stock G-35
+// controller programs, plus a couple extra thrown in for fun. Some are
 // intentionally done a little differently from the originals because I thought
 // they looked better.
 //
@@ -15,9 +15,8 @@
 // Arduino pin number. Pin 13 will blink the on-board LED.
 #define OUT_PIN 13
 
-// Total # of lights on string (usually 50, 48, or 36). Maximum is 63,
-// because the protocol uses 6-bit addressing and bulb #63 is reserved
-// for broadcast messages.
+// Total # of lights on string (usually 50, 48, or 36). Maximum is 63, because the
+// protocol uses 6-bit addressing and bulb #63 is reserved for broadcast messages.
 #define LIGHT_COUNT 50
 #define LAST_LIGHT (LIGHT_COUNT - 1)
 #define HALFWAY_POINT (LIGHT_COUNT / 2)
@@ -32,8 +31,10 @@ void setup() {
   lights.enumerate_forward();
   delay(50);
   lights.test_patterns();
+  randomSeed(analogRead(0));
 }
 
+// Interface for light programs.
 class LightProgram {
  public:
   virtual void Init() {}
@@ -43,17 +44,11 @@ class LightProgram {
 class SteadyWhite : public LightProgram {
  public:
   void Init() {
-    intensity_ = 0;
+    lights.fill_color(0, LIGHT_COUNT, 0, COLOR_WHITE);
+    lights.fade_in(10);
   }
   void Do() {
-    if (intensity_ < G35::MAX_INTENSITY) {
-      ++intensity_;
-      lights.fill_color(0, LIGHT_COUNT, intensity_, COLOR_WHITE);
-      delay(10);
-    }
   }
- private:
-  uint8_t intensity_;
 };
 
 class CrossOverWave : public LightProgram {
@@ -65,8 +60,12 @@ class CrossOverWave : public LightProgram {
   void Do() {
     if (x_ == LIGHT_COUNT) {
       x_ = 0;
-      color_a_ = lights.color_hue(rand() & 255);
-      color_b_ = lights.color_hue(rand() & 255);
+      color_a_ = 0;
+      color_b_ = 0;
+      while (color_a_ == color_b_) {
+	color_a_ = G35::max_color(rand());
+	color_b_ = G35::max_color(rand());
+      }
     }
     lights.set_color(x_, G35::MAX_INTENSITY, color_a_);
     lights.set_color(LAST_LIGHT - x_, G35::MAX_INTENSITY, color_b_);
@@ -88,7 +87,10 @@ class ForwardWave : public LightProgram {
   void Do() {
     if (x_ == LIGHT_COUNT) {
       x_ = 0;
-      color_ = lights.color_hue(rand() & 255);
+      int old_color = color_;
+      do {
+	color_ = G35::max_color(rand());
+      } while (old_color == color_);
     }
     lights.set_color(x_, G35::MAX_INTENSITY, color_);
     ++x_;
@@ -110,8 +112,7 @@ class ChasingRainbow : public LightProgram {
 			 G35::rainbow_color);
     if (count_ < LIGHT_COUNT) {
       ++count_;
-    }
-    else {
+    } else {
       ++sequence_;
     }
     delay(BULB_FRAME);
@@ -133,14 +134,16 @@ class AlternateDirectionalWave : public LightProgram {
     if (x_ == LIGHT_COUNT) {
       x_ = 0;
       hit_end = true;
-    }
-    else if (x_ == 0) {
+    } else if (x_ == 0) {
       x_ = LIGHT_COUNT;
       hit_end = true;
     }
     if (hit_end) {
       direction_ = -direction_;
-      color_ = lights.color_hue(rand() & 255);
+      int old_color = color_;
+      do {
+	color_ = G35::max_color(rand());
+      } while (old_color == color_);
       delay(500);
     }
     lights.set_color(x_, G35::MAX_INTENSITY, color_);
@@ -156,12 +159,17 @@ class AlternateDirectionalWave : public LightProgram {
 class FadeInFadeOutSolidColors : public LightProgram {
  public:
   void Do() {
-    color_t color = lights.color_hue(rand());
-    lights.fill_color(0, LIGHT_COUNT, 0, color);
+    int new_color = color_;
+    do {
+      color_ = G35::max_color(rand());
+    } while (new_color == color_);
+
+    lights.fill_color(0, LIGHT_COUNT, 0, color_);
     lights.fade_in(5);
-    delay(2000);
     lights.fade_out(5);
   }
+ private:
+  color_t color_;
 };
 
 class BidirectionalWave : public LightProgram {
@@ -171,12 +179,19 @@ class BidirectionalWave : public LightProgram {
   }
 
   void Do() {
+    // With 50 lights, we run into some edge cases because 50 isn't evenly
+    // divisible by 4. It's a fairly crazy program to start with, so I'm
+    // leaving it like this.
     if (x_ == HALFWAY_POINT) {
       x_ = 0;
-      color_a_ = lights.color_hue(rand() & 255);
-      color_b_ = lights.color_hue(rand() & 255);
-      color_c_ = lights.color_hue(rand() & 255);
-      color_d_ = lights.color_hue(rand() & 255);
+      do {
+	color_a_ = G35::max_color(rand());
+	color_b_ = G35::max_color(rand());
+      } while (color_a_ == color_b_);
+      do {
+	color_c_ = G35::max_color(rand());
+	color_d_ = G35::max_color(rand());
+      } while (color_c_ == color_d_);
     }
     lights.set_color(x_, G35::MAX_INTENSITY, color_a_);
     lights.set_color(HALFWAY_POINT - 1 - x_, G35::MAX_INTENSITY, color_b_);
@@ -204,8 +219,7 @@ class ChasingSolidColors : public LightProgram {
 			 G35::max_color);
     if (count_ < LIGHT_COUNT) {
       ++count_;
-    }
-    else {
+    } else {
       ++sequence_;
     }
     delay(BULB_FRAME);
@@ -219,9 +233,8 @@ class FadeInFadeOutMultiColors : public LightProgram {
  public:
   void Do() {
     lights.fill_sequence(rand(), 5, 0, G35::max_color);
-    lights.fade_in(4);
-    delay(1500);
-    lights.fade_out(4);
+    lights.fade_in(5);
+    lights.fade_out(5);
   }
 };
 
@@ -244,9 +257,8 @@ class RandomSparkling : public LightProgram {
  public:
   void Do() {
     lights.fill_random_max(0, LIGHT_COUNT, G35::MAX_INTENSITY);
-    delay(500);
-    lights.fill_color(0, LIGHT_COUNT, G35::MAX_INTENSITY,
-		      COLOR_BLACK);
+    delay(1000);
+    lights.fill_color(0, LIGHT_COUNT, G35::MAX_INTENSITY, COLOR_BLACK);
     delay(500);
   }
  private:
@@ -264,8 +276,7 @@ class ChasingMultiColors : public LightProgram {
 			 G35::max_color);
     if (count_ < LIGHT_COUNT) {
       ++count_;
-    }
-    else {
+    } else {
       ++sequence_;
     }
     delay(BULB_FRAME);
@@ -293,12 +304,11 @@ class ChasingWhiteRedBlue : public LightProgram {
     sequence_ = 0;
   }
   void Do() {
-    lights.fill_sequence(0, count_, sequence_, 3,
-			 G35::MAX_INTENSITY, red_white_blue);
+    lights.fill_sequence(0, count_, sequence_, 3, G35::MAX_INTENSITY,
+			 red_white_blue);
     if (count_ < LIGHT_COUNT) {
       ++count_;
-    }
-    else {
+    } else {
       ++sequence_;
     }
     delay(BULB_FRAME);
@@ -319,12 +329,10 @@ class RedGreenChase : public LightProgram {
     sequence_ = 0;
   }
   void Do() {
-    lights.fill_sequence(0, count_, sequence_, 5,
-			 G35::MAX_INTENSITY, red_green);
+    lights.fill_sequence(0, count_, sequence_, 5, G35::MAX_INTENSITY, red_green);
     if (count_ < LIGHT_COUNT) {
       ++count_;
-    }
-    else {
+    } else {
       ++sequence_;
     }
     delay(BULB_FRAME);
