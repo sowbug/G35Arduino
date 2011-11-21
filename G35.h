@@ -77,17 +77,23 @@ class G35 {
     RB_LAST = RB_VIOLET,
     RB_COUNT = RB_LAST + 1
   };
-  static color_t rainbow_color(uint8_t rb_color);
+  static color_t rainbow_color(uint16_t color);
 
-  // Given a value 0-255, returns a "max" color (one with R/G/B each set to
+  // Given an int value, returns a "max" color (one with R/G/B each set to
   // 0 or 255, except for black and white). The mapping is arbitary but
   // deterministic.
-  static color_t max_color(uint8_t color);
+  static color_t max_color(uint16_t color);
 
   // Make all LEDs the same color starting at specified beginning LED
   void fill_color(uint8_t begin, uint8_t count, uint8_t intensity,
                   color_t color);
   void fill_random_max(uint8_t begin, uint8_t count, uint8_t intensity);
+
+  void fill_sequence(uint16_t sequence, uint8_t span_size, uint8_t intensity,
+		     color_t (*sequence_func)(uint16_t sequence));
+  void fill_sequence(uint8_t begin, uint8_t count,
+		     uint16_t sequence, uint8_t span_size, uint8_t intensity,
+		     color_t (*sequence_func)(uint16_t sequence));
 
   void fade_in(uint8_t delay_msec);
   void fade_out(uint8_t delay_msec);

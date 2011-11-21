@@ -112,6 +112,22 @@ void G35::fill_random_max(uint8_t begin, uint8_t count, uint8_t intensity) {
   }
 }
 
+void G35::fill_sequence(uint8_t begin, uint8_t count,
+			uint16_t sequence, uint8_t span_size,
+			uint8_t intensity,
+			color_t (*sequence_func)(uint16_t sequence)) {
+  while (count--) {
+    set_color(begin + count, intensity,
+	      sequence_func(sequence++ / span_size));
+  }
+}
+
+void G35::fill_sequence(uint16_t sequence, uint8_t span_size,
+			uint8_t intensity,
+color_t (*sequence_func)(uint16_t sequence)) {
+  fill_sequence(0, _light_count, sequence, span_size, intensity, sequence_func);
+}
+
 void G35::enumerate(bool reverse) {
   uint8_t count = _light_count;
   uint8_t bulb = reverse ? _light_count - 1 : 0;
@@ -134,14 +150,15 @@ void G35::test_patterns() {
   fill_color(0, _light_count, 0, rainbow_color(RB_FIRST));
   fade_in(1);
   for (uint8_t i = RB_FIRST; i <= RB_LAST; ++i) {
-    delay(250);
+    delay(50);
     fill_color(0, _light_count, MAX_INTENSITY, rainbow_color(i));
   }
   fade_out(1);
   fill_color(0, _light_count, MAX_INTENSITY, COLOR_BLACK);
+  delay(500);
 }
 
-color_t G35::rainbow_color(uint8_t color) {
+color_t G35::rainbow_color(uint16_t color) {
   if (color >= RB_COUNT) {
     color = color % RB_COUNT;
   }
@@ -163,7 +180,7 @@ color_t G35::rainbow_color(uint8_t color) {
   }
 }
 
-color_t G35::max_color(uint8_t color) {
+color_t G35::max_color(uint16_t color) {
   if (color >= 6) {
     color = color % 6;
   }
