@@ -10,7 +10,7 @@
 #ifndef INCLUDE_G35_ARDUINO_H
 #define INCLUDE_G35_ARDUINO_H
 
-#include <WProgram.h>
+#include <Arduino.h>
 
 #define color_t uint16_t
 #define CHANNEL_MAX           (0xF)   // Each color channel is 4-bit

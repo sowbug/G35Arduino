@@ -8,7 +8,6 @@
   README for complete attributions.
 */
 
-#include <WProgram.h>
 #include <G35.h>
 
 G35::G35(int pin, int light_count) {
