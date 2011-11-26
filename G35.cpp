@@ -201,14 +201,14 @@ color_t G35::max_color(uint16_t color) {
 
 void G35::fade_in(uint8_t delay_msec) {
   for (int i = 0; i <= MAX_INTENSITY; ++i) {
-    set_color(63, i, COLOR_BLACK);
+    set_color(BROADCAST_BULB, i, COLOR_BLACK);
     delay(delay_msec);
   }
 }
 
 void G35::fade_out(uint8_t delay_msec) {
   for (int i = MAX_INTENSITY; i >= 0; --i) {
-    set_color(63, i, COLOR_BLACK);
+    set_color(BROADCAST_BULB, i, COLOR_BLACK);
     delay(delay_msec);
   }
 }
