@@ -102,6 +102,10 @@ class G35 {
   void fill_sequence(uint8_t begin, uint8_t count,
 		     uint16_t sequence, uint8_t span_size, uint8_t intensity,
 		     color_t (*sequence_func)(uint16_t sequence));
+  void fill_sequence(uint8_t begin, uint8_t count, uint16_t sequence,
+		     uint8_t span_size,
+		     bool (*sequence_func)(uint16_t sequence, color_t& color,
+					   uint8_t& intensity));
 
   void fade_in(uint8_t delay_msec);
   void fade_out(uint8_t delay_msec);

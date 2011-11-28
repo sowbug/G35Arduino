@@ -111,7 +111,7 @@ class AlternateDirectionalWave : public LightProgram {
       x_ = 0;
       hit_end = true;
     } else if (x_ == -1) {
-      x_ = light_count_ - 1;
+      x_ = g35_.get_last_light();
       hit_end = true;
     }
     if (hit_end) {

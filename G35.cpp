@@ -129,6 +129,18 @@ void G35::fill_sequence(uint16_t sequence, uint8_t span_size,
   fill_sequence(0, _light_count, sequence, span_size, intensity, sequence_func);
 }
 
+void G35::fill_sequence(uint8_t begin, uint8_t count,
+			uint16_t sequence, uint8_t span_size,
+			bool (*sequence_func)(uint16_t sequence, color_t& color,
+					      uint8_t& intensity)) {
+  while (count--) {
+    color_t color;
+    uint8_t intensity;
+    sequence_func(sequence++ / span_size, color, intensity);
+    set_color(begin + count, intensity, color);
+  }
+}
+
 void G35::enumerate(bool reverse) {
   uint8_t count = _light_count;
   uint8_t bulb = reverse ? _light_count - 1 : 0;

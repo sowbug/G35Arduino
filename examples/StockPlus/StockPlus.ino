@@ -12,36 +12,9 @@
 #include <ProgramRunner.h>
 #include <StockPrograms.h>
 
-class RedGreenChase : public LightProgram {
- public:
- RedGreenChase(G35& g35)
-   : LightProgram(g35), 
-    count_(1),
-    sequence_(0) {}
-
-  uint32_t Do() {
-    g35_.fill_sequence(0, count_, sequence_, 5, G35::MAX_INTENSITY,
-                       red_green);
-    if (count_ < light_count_) {
-      ++count_;
-    } else {
-      ++sequence_;
-    }
-    return bulb_frame_;
-  }
-
-  static color_t red_green(uint16_t sequence) {
-    return sequence % 2 ? COLOR_RED : COLOR_GREEN;
-  }
-
- private:
-  uint8_t count_;
-  uint16_t sequence_;
-};
-
 class Meteorite : public LightProgram {
  public:
- Meteorite(G35& g35) 
+ Meteorite(G35& g35)
    : LightProgram(g35),
     position_(g35_.get_last_light() + TAIL) {}
 
@@ -94,6 +67,63 @@ class Twinkle : public LightProgram {
   }
 };
 
+class RedGreenChase : public LightProgram {
+ public:
+ RedGreenChase(G35& g35)
+   : LightProgram(g35),
+    count_(1),
+    sequence_(0) {}
+
+  uint32_t Do() {
+    g35_.fill_sequence(0, count_, sequence_, 5, G35::MAX_INTENSITY,
+                       red_green);
+    if (count_ < light_count_) {
+      ++count_;
+    } else {
+      ++sequence_;
+    }
+    return bulb_frame_;
+  }
+
+  static color_t red_green(uint16_t sequence) {
+    return sequence % 2 ? COLOR_RED : COLOR_GREEN;
+  }
+
+ private:
+  uint8_t count_;
+  uint16_t sequence_;
+};
+
+class Pulse : public LightProgram {
+ public:
+ Pulse(G35& g35)
+   : LightProgram(g35),
+    count_(1),
+    sequence_(0) {}
+
+  uint32_t Do() {
+    g35_.fill_sequence(0, count_, sequence_, 1, red_pulse);
+    if (count_ < light_count_) {
+      ++count_;
+    } else {
+      ++sequence_;
+    }
+    return 1;
+  }
+
+  static bool rainbow_pulse(uint16_t sequence, color_t& color,
+			    uint8_t& intensity) {
+    const int PHASE = 32;
+    color = G35::rainbow_color((sequence + PHASE) / (PHASE * 2));
+    intensity = abs(PHASE - (int)(sequence) % (PHASE + PHASE));
+    return true;
+  }
+
+ private:
+  uint8_t count_;
+  uint16_t sequence_;
+};
+
 // How long each program should run.
 #define PROGRAM_DURATION_SECONDS (30)
 
@@ -104,7 +134,7 @@ class Twinkle : public LightProgram {
 
 G35 lights(OUT_PIN, LIGHT_COUNT);
 
-#define PROGRAM_COUNT (15)
+#define PROGRAM_COUNT (16)
 LightProgram* CreateProgram(uint8_t program_index) {
   switch (program_index) {
   case 0: return new SteadyWhite(lights);
@@ -122,6 +152,7 @@ LightProgram* CreateProgram(uint8_t program_index) {
   case 12: return new Meteorite(lights);
   case 13: return new Twinkle(lights);
   case 14: return new RedGreenChase(lights);
+  case 15: return new Pulse(lights);
   case PROGRAM_COUNT:
   default:
     // PROBLEM! PROGRAM_COUNT is wrong.
