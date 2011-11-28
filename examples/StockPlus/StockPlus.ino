@@ -102,7 +102,7 @@ class Pulse : public LightProgram {
     sequence_(0) {}
 
   uint32_t Do() {
-    g35_.fill_sequence(0, count_, sequence_, 1, red_pulse);
+    g35_.fill_sequence(0, count_, sequence_, 1, rainbow_pulse);
     if (count_ < light_count_) {
       ++count_;
     } else {
