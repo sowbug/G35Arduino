@@ -65,7 +65,7 @@ class ForwardWave : public LightProgram {
   uint32_t Do() {
     if (x_ == light_count_) {
       x_ = 0;
-      int old_color = color_;
+      color_t old_color = color_;
       do {
         color_ = G35::max_color(rand());
       } while (old_color == color_);
@@ -110,13 +110,13 @@ class AlternateDirectionalWave : public LightProgram {
     if (x_ == light_count_) {
       x_ = 0;
       hit_end = true;
-    } else if (x_ == 0) {
-      x_ = light_count_;
+    } else if (x_ == -1) {
+      x_ = light_count_ - 1;
       hit_end = true;
     }
     if (hit_end) {
       direction_ = -direction_;
-      int old_color = color_;
+      color_t old_color = color_;
       do {
         color_ = G35::max_color(rand());
       } while (old_color == color_);
@@ -135,20 +135,33 @@ class AlternateDirectionalWave : public LightProgram {
 
 class FadeInFadeOutSolidColors : public LightProgram {
  public:
- FadeInFadeOutSolidColors(G35& g35) : LightProgram(g35) {}
+ FadeInFadeOutSolidColors(G35& g35)
+   : LightProgram(g35), color_(0), intensity_(0) {}
 
   uint32_t Do() {
-    int new_color = color_;
-    do {
-      color_ = G35::max_color(rand());
-    } while (new_color == color_);
+    if (intensity_ == 0) {
+      color_t new_color = color_;
+      do {
+	color_ = G35::max_color(rand());
+      } while (new_color == color_);
 
-    g35_.fill_color(0, light_count_, 0, color_);
-    g35_.fade_in(5);
-    g35_.fade_out(5);
+      g35_.set_color(G35::BROADCAST_BULB, 0, COLOR_BLACK);
+      g35_.fill_color(0, light_count_, 0, color_);
+      d_intensity_ = 1;
+    }
+    if (intensity_ == G35::MAX_INTENSITY) {
+      d_intensity_ = -1;
+    }
+    intensity_ += d_intensity_;
+    g35_.set_color(G35::BROADCAST_BULB, intensity_, COLOR_BLACK);
+
+    return 500 / G35::BROADCAST_BULB;
   }
+
  private:
   color_t color_;
+  uint8_t intensity_;
+  int8_t d_intensity_;
 };
 
 class BidirectionalWave : public LightProgram {
@@ -230,7 +243,8 @@ class FadeInFadeOutMultiColors : public LightProgram {
       break;
     }
     g35_.set_color(G35::BROADCAST_BULB, intensity_, COLOR_BLACK);
-    return bulb_frame_;
+
+    return 500 / G35::BROADCAST_BULB;
   }
  private:
   uint8_t state_;
@@ -261,15 +275,12 @@ class RandomSparkling : public LightProgram {
     if (state_++ > 1) {
       state_ = 0;
     }
-    switch (state_) {
-    case 0:
+    if (state_ == 0) {
       g35_.fill_random_max(0, light_count_, G35::MAX_INTENSITY);
       return 1000;
-    case 1:
-      g35_.fill_color(0, light_count_, G35::MAX_INTENSITY,
-                      COLOR_BLACK);
-      return 500;
     }
+    g35_.fill_color(0, light_count_, G35::MAX_INTENSITY, COLOR_BLACK);
+    return 500;
   }
  private:
   color_t color_;
@@ -289,7 +300,7 @@ class ChasingMultiColors : public LightProgram {
     } else {
       ++sequence_;
     }
-    return bulb_frame_;
+    return bulb_frame_ * 6;
   }
  private:
   uint8_t count_;

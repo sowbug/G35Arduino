@@ -104,6 +104,7 @@ class Twinkle : public LightProgram {
 
 G35 lights(OUT_PIN, LIGHT_COUNT);
 
+#define PROGRAM_COUNT (15)
 LightProgram* CreateProgram(uint8_t program_index) {
   switch (program_index) {
   case 0: return new SteadyWhite(lights);
@@ -121,6 +122,10 @@ LightProgram* CreateProgram(uint8_t program_index) {
   case 12: return new Meteorite(lights);
   case 13: return new Twinkle(lights);
   case 14: return new RedGreenChase(lights);
+  case PROGRAM_COUNT:
+  default:
+    // PROBLEM! PROGRAM_COUNT is wrong.
+    return NULL;
   }
 }
 

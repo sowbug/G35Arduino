@@ -15,13 +15,13 @@
 
 class ProgramRunner {
  public:
-  ProgramRunner(LightProgram* (*program_creator)(uint8_t program_index),
-                uint8_t program_count, uint16_t program_duration_seconds)
+ ProgramRunner(LightProgram* (*program_creator)(uint8_t program_index),
+	       uint8_t program_count, uint16_t program_duration_seconds)
    : program_count_(program_count),
     program_duration_seconds_(program_duration_seconds),
     program_index_(program_count_ - 1),
     next_switch_millis_(0),
-    program_creator_(program_creator_),
+    program_creator_(program_creator),
     program_(NULL) {}
 
   void loop() {

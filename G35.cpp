@@ -95,6 +95,8 @@ color_t G35::color_hue(uint8_t h) {
   case 3:     h -= 48; return color((CHANNEL_MAX - h), 0, CHANNEL_MAX);
   case 4:     h -= 64; return color(0, h, CHANNEL_MAX);
   case 5:     h -= 80; return color(0, CHANNEL_MAX, (CHANNEL_MAX - h));
+  default:
+    return COLOR_WHITE;
   }
 }
 
@@ -123,7 +125,7 @@ void G35::fill_sequence(uint8_t begin, uint8_t count,
 
 void G35::fill_sequence(uint16_t sequence, uint8_t span_size,
 			uint8_t intensity,
-color_t (*sequence_func)(uint16_t sequence)) {
+			color_t (*sequence_func)(uint16_t sequence)) {
   fill_sequence(0, _light_count, sequence, span_size, intensity, sequence_func);
 }
 
@@ -176,6 +178,8 @@ color_t G35::rainbow_color(uint16_t color) {
     return COLOR_INDIGO;
   case RB_VIOLET:
     return COLOR_VIOLET;
+  default:
+    return COLOR_WHITE;
   }
 }
 
@@ -196,6 +200,8 @@ color_t G35::max_color(uint16_t color) {
     return COLOR_MAGENTA;
   case 5:
     return COLOR_YELLOW;
+  default:
+    return COLOR_WHITE;
   }
 }
 

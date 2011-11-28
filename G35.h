@@ -71,7 +71,7 @@ class G35 {
   // Returns primary hue colors
   static color_t color_hue(uint8_t h);
 
-  typedef enum {
+  enum {
     RB_RED = 0,
     RB_ORANGE,
     RB_YELLOW,
