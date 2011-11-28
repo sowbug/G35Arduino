@@ -102,7 +102,7 @@ class Pulse : public LightProgram {
     sequence_(0) {}
 
   uint32_t Do() {
-    g35_.fill_sequence(0, count_, sequence_, 1, rainbow_pulse);
+    g35_.fill_sequence(0, count_, sequence_, 1, pulser);
     if (count_ < light_count_) {
       ++count_;
     } else {
@@ -111,10 +111,9 @@ class Pulse : public LightProgram {
     return 1;
   }
 
-  static bool rainbow_pulse(uint16_t sequence, color_t& color,
-			    uint8_t& intensity) {
+  static bool pulser(uint16_t sequence, color_t& color, uint8_t& intensity) {
     const int PHASE = 32;
-    color = G35::rainbow_color((sequence + PHASE) / (PHASE * 2));
+    color = G35::max_color((sequence + PHASE) / (PHASE * 2));
     intensity = abs(PHASE - (int)(sequence) % (PHASE + PHASE));
     return true;
   }
@@ -122,6 +121,50 @@ class Pulse : public LightProgram {
  private:
   uint8_t count_;
   uint16_t sequence_;
+};
+
+class Cylon : public LightProgram {
+ public:
+ Cylon(G35& g35)
+   : LightProgram(g35),
+    last_light_shifted_((light_count_ << 8) - 1), x_(0), d2x_(-2),
+    color_(G35::max_color(rand())) {}
+
+  uint32_t Do() {
+    uint8_t old_x_pix = x_ >> 8;
+    dx_ += d2x_;
+    x_ += dx_;
+
+    bool moving_right = d2x_ > 0;
+    bool past_right = old_x_pix >= g35_.get_halfway_point();
+    if (moving_right == past_right) {
+      d2x_ = -d2x_;
+    }
+
+    if (x_ <= 0) {
+      x_ = 0;
+      dx_ = 0;
+    }
+    if (x_ > last_light_shifted_) {
+      x_ = last_light_shifted_;
+      dx_ = 0;
+    }
+
+    uint8_t x_pix = x_ >> 8;
+    if (old_x_pix != x_pix) {
+      g35_.set_color(old_x_pix, G35::MAX_INTENSITY, COLOR_BLACK);
+    }
+    g35_.set_color(x_pix, G35::MAX_INTENSITY, color_);
+
+    return bulb_frame_ >> 1;
+  }
+
+ private:
+  int16_t last_light_shifted_;
+  int16_t x_;
+  int16_t dx_;
+  int16_t d2x_;
+  color_t color_;
 };
 
 // How long each program should run.
@@ -134,7 +177,7 @@ class Pulse : public LightProgram {
 
 G35 lights(OUT_PIN, LIGHT_COUNT);
 
-#define PROGRAM_COUNT (16)
+#define PROGRAM_COUNT (17)
 LightProgram* CreateProgram(uint8_t program_index) {
   switch (program_index) {
   case 0: return new SteadyWhite(lights);
@@ -153,6 +196,7 @@ LightProgram* CreateProgram(uint8_t program_index) {
   case 13: return new Twinkle(lights);
   case 14: return new RedGreenChase(lights);
   case 15: return new Pulse(lights);
+  case 16: return new Cylon(lights);
   case PROGRAM_COUNT:
   default:
     // PROBLEM! PROGRAM_COUNT is wrong.
@@ -160,7 +204,7 @@ LightProgram* CreateProgram(uint8_t program_index) {
   }
 }
 
-ProgramRunner runner(CreateProgram, 15, PROGRAM_DURATION_SECONDS);
+ProgramRunner runner(CreateProgram, PROGRAM_COUNT, PROGRAM_DURATION_SECONDS);
 
 void setup() {
   randomSeed(analogRead(0));
