@@ -8,6 +8,11 @@ Here's the blog post that started it all:
 Installation
 ============
 
+Requirements: Arduino 1.0. ***This is important!*** As of mid-
+November 2011, the default download at arduino.cc is a pre-1.0 version.
+You need to go to http://code.google.com/p/arduino/wiki/Arduino1 to
+download a 1.0 release candidate.
+
 Find your Arduino IDE's libraries directory. Then unzip the project
 archive into it. It should end up looking like this:
 
