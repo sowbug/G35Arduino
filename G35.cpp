@@ -8,40 +8,72 @@
   README for complete attributions.
 */
 
+// In order to support multiple strings on different pins, we have to
+// disable DigitalWriteFast. I (miket) am thinking about how to generally
+// enable this. It might involve callbacks -- which might be just as slow
+// as Arduino digitalWrite().
+#define USE_DIGITAL_WRITE_FAST (0)
+
 #include <G35.h>
+#include <DigitalWriteFast.h>
+
+#if USE_DIGITAL_WRITE_FAST
+#define SHORT_PHASE (10)
+#define LONG_PHASE (20)
+#define SHORT_ZERO_PHASE (SHORT_PHASE)
+#define LONG_ZERO_PHASE (LONG_PHASE)
+#define QUIET_PHASE (30)
+
+// Hardcode this to the number of the pin you want.
+// See digitalWriteFast.h for why a plain number matters (TL;DR: it's possible
+// to generate a much faster write if the value is known at compile time).
+#define G35_PIN (13)
+
+#else
+
+// Your digitalWrite() is slow, and we haven't yet worked out perfect timings
+// for all parts of the protocol. Sorry.
+#define SHORT_PHASE (6)
+#define LONG_PHASE (12)
+#define SHORT_ZERO_PHASE (2)
+#define LONG_ZERO_PHASE (17)
+#define QUIET_PHASE (30)
+#define G35_PIN (pin_)
+
+#endif
 
 G35::G35(int pin, int light_count) {
-  pinMode(pin, OUTPUT);
-  _pin = pin;
-  _light_count = light_count;
+  pinModeFast(pin, OUTPUT);
+  pin_ = pin;
+  light_count_ = light_count;
 }
 
 // The timings below have been hand-tuned. Adjust if necessary.
 void G35::begin() {
-  digitalWrite(_pin, HIGH);
-  delayMicroseconds(6);  // Output should be ~ 10uS long
-  digitalWrite(_pin, LOW);
+  digitalWriteFast(G35_PIN, HIGH);
+  delayMicroseconds(SHORT_PHASE);
+  digitalWriteFast(G35_PIN, LOW);
 }
 
 void G35::one() {
-  digitalWrite(_pin, LOW);
-  delayMicroseconds(12);  // Output should be ~ 20uS long
-  digitalWrite(_pin, HIGH);
-  delayMicroseconds(6);   // Output should be ~ 10uS long
-  digitalWrite(_pin, LOW);
+  digitalWriteFast(G35_PIN, LOW);
+  delayMicroseconds(LONG_PHASE);
+  digitalWriteFast(G35_PIN, HIGH);
+  delayMicroseconds(SHORT_PHASE);
+  digitalWriteFast(G35_PIN, LOW);
 }
 
 void G35::zero() {
-  digitalWrite(_pin, LOW);
-  delayMicroseconds(2);  // Output should be ~ 10uS long
-  digitalWrite(_pin, HIGH);
-  delayMicroseconds(17);  // Output should be ~ 20uS long
-  digitalWrite(_pin, LOW);
+  digitalWriteFast(G35_PIN, LOW);
+  delayMicroseconds(SHORT_ZERO_PHASE);
+  digitalWriteFast(G35_PIN, HIGH);
+  delayMicroseconds(LONG_ZERO_PHASE);
+  digitalWriteFast(G35_PIN, LOW);
 }
 
 void G35::end() {
-  digitalWrite(_pin, LOW);
-  delayMicroseconds(30);  // Quiet time should be ~ 30us long
+  digitalWriteFast(G35_PIN, LOW);
+  delayMicroseconds(QUIET_PHASE);
 }
 
 void G35::set_color(uint8_t led, uint8_t intensity, color_t color) {
@@ -74,7 +106,7 @@ void G35::set_color(uint8_t led, uint8_t intensity, color_t color) {
 
 bool G35::set_color_if_in_range(uint8_t position, uint8_t intensity,
 				color_t color) {
-  if (position >= _light_count) {
+  if (position >= light_count_) {
     return false;
   }
   set_color(position, intensity, color);
@@ -126,7 +158,7 @@ void G35::fill_sequence(uint8_t begin, uint8_t count,
 void G35::fill_sequence(uint16_t sequence, uint8_t span_size,
 			uint8_t intensity,
 			color_t (*sequence_func)(uint16_t sequence)) {
-  fill_sequence(0, _light_count, sequence, span_size, intensity, sequence_func);
+  fill_sequence(0, light_count_, sequence, span_size, intensity, sequence_func);
 }
 
 void G35::fill_sequence(uint8_t begin, uint8_t count,
@@ -142,8 +174,8 @@ void G35::fill_sequence(uint8_t begin, uint8_t count,
 }
 
 void G35::enumerate(bool reverse) {
-  uint8_t count = _light_count;
-  uint8_t bulb = reverse ? _light_count - 1 : 0;
+  uint8_t count = light_count_;
+  uint8_t bulb = reverse ? light_count_ - 1 : 0;
   int8_t delta = reverse ? -1 : 1;
   while (count--) {
     set_color(bulb, MAX_INTENSITY, COLOR_BLACK);
@@ -160,14 +192,14 @@ void G35::enumerate_reverse() {
 }
 
 void G35::test_patterns() {
-  fill_color(0, _light_count, 0, rainbow_color(RB_FIRST));
+  fill_color(0, light_count_, 0, rainbow_color(RB_FIRST));
   fade_in(1);
   for (uint8_t i = RB_FIRST; i <= RB_LAST; ++i) {
     delay(50);
-    fill_color(0, _light_count, MAX_INTENSITY, rainbow_color(i));
+    fill_color(0, light_count_, MAX_INTENSITY, rainbow_color(i));
   }
   fade_out(1);
-  fill_color(0, _light_count, MAX_INTENSITY, COLOR_BLACK);
+  fill_color(0, light_count_, MAX_INTENSITY, COLOR_BLACK);
   delay(500);
 }
 

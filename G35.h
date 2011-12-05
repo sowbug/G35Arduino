@@ -42,12 +42,12 @@ class G35 {
   // Arduino pin # and total lights on string
   G35(int pin, int light_count);
 
-  uint8_t get_light_count() { return _light_count; }
-  uint8_t get_last_light() { return _light_count - 1; }
-  uint8_t get_halfway_point() { return _light_count / 2; }
+  uint8_t get_light_count() { return light_count_; }
+  uint8_t get_last_light() { return light_count_ - 1; }
+  uint8_t get_halfway_point() { return light_count_ / 2; }
 
   // One bulb's share of a second, in milliseconds
-  uint8_t get_bulb_frame() { return 1000 / _light_count; }
+  uint8_t get_bulb_frame() { return 1000 / light_count_; }
 
   // Initialize lights by giving them each an address. enumerate_forward()
   // numbers the bulb closest to the controller 0, and enumerate_reverse()
@@ -118,8 +118,8 @@ class G35 {
   void one();
   void zero();
   void end();
-  int _pin;
-  int _light_count;
+  int pin_;
+  int light_count_;
 };
 
 #endif  // INCLUDE_G35_ARDUINO_H
