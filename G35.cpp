@@ -196,8 +196,8 @@ color_t G35::rainbow_color(uint16_t color) {
 }
 
 color_t G35::max_color(uint16_t color) {
-  if (color >= 6) {
-    color = color % 6;
+  if (color >= 7) {
+    color = color % 7;
   }
   switch (color) {
   case 0:
