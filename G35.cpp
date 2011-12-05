@@ -6,102 +6,86 @@
 
   Original version by Paul Martis (http://www.digitalmisery.com). See
   README for complete attributions.
+
+  Special thanks to Richard <rkfoote@gmail.com> and "slinky" for the unrolled-
+  loop protocol code that seems to work very well!
 */
 
-// In order to support multiple strings on different pins, we have to
-// disable DigitalWriteFast. I (miket) am thinking about how to generally
-// enable this. It might involve callbacks -- which might be just as slow
-// as Arduino digitalWrite().
-#define USE_DIGITAL_WRITE_FAST (0)
-
 #include <G35.h>
-#include <DigitalWriteFast.h>
-
-#if USE_DIGITAL_WRITE_FAST
-#define SHORT_PHASE (10)
-#define LONG_PHASE (20)
-#define SHORT_ZERO_PHASE (SHORT_PHASE)
-#define LONG_ZERO_PHASE (LONG_PHASE)
-#define QUIET_PHASE (30)
-
-// Hardcode this to the number of the pin you want.
-// See digitalWriteFast.h for why a plain number matters (TL;DR: it's possible
-// to generate a much faster write if the value is known at compile time).
-#define G35_PIN (13)
-
-#else
-
-// Your digitalWrite() is slow, and we haven't yet worked out perfect timings
-// for all parts of the protocol. Sorry.
-#define SHORT_PHASE (6)
-#define LONG_PHASE (12)
-#define SHORT_ZERO_PHASE (2)
-#define LONG_ZERO_PHASE (17)
-#define QUIET_PHASE (30)
-#define G35_PIN (pin_)
-
-#endif
 
 G35::G35(int pin, int light_count) {
-  pinModeFast(pin, OUTPUT);
+  pinMode(pin, OUTPUT);
   pin_ = pin;
   light_count_ = light_count;
 }
 
-// The timings below have been hand-tuned. Adjust if necessary.
-void G35::begin() {
-  digitalWriteFast(G35_PIN, HIGH);
-  delayMicroseconds(SHORT_PHASE);
-  digitalWriteFast(G35_PIN, LOW);
-}
+#define MHZ_20 (0)  // else 16MHz, standard Arduino/Teensy
+#if MHZ_20
+#define DELAYLONG 25    // should be ~ 20uS long
+#define DELAYSHORT 11   // should be ~ 10uS long
+#else
+#define DELAYLONG 17    // should be ~ 20uS long
+#define DELAYSHORT 7   // should be ~ 10uS long
+#endif
+#define DELAYEND 40     // should be ~ 30uS long
 
-void G35::one() {
-  digitalWriteFast(G35_PIN, LOW);
-  delayMicroseconds(LONG_PHASE);
-  digitalWriteFast(G35_PIN, HIGH);
-  delayMicroseconds(SHORT_PHASE);
-  digitalWriteFast(G35_PIN, LOW);
-}
+#define ZERO(x) digitalWrite(x, LOW); \
+  delayMicroseconds(DELAYSHORT); \
+  digitalWrite(x, HIGH); \
+  delayMicroseconds(DELAYLONG);
 
-void G35::zero() {
-  digitalWriteFast(G35_PIN, LOW);
-  delayMicroseconds(SHORT_ZERO_PHASE);
-  digitalWriteFast(G35_PIN, HIGH);
-  delayMicroseconds(LONG_ZERO_PHASE);
-  digitalWriteFast(G35_PIN, LOW);
-}
-
-void G35::end() {
-  digitalWriteFast(G35_PIN, LOW);
-  delayMicroseconds(QUIET_PHASE);
-}
+#define ONE(x) digitalWrite(x, LOW); \
+  delayMicroseconds(DELAYLONG); \
+  digitalWrite(x, HIGH); \
+  delayMicroseconds(DELAYSHORT);
 
 void G35::set_color(uint8_t led, uint8_t intensity, color_t color) {
-  uint8_t i;
-  begin();
-  for (i = 6; i; i--, (led <<= 1)) {
-    if (led & (1 << 5)) {
-      one();
-    } else {
-      zero();
-    }
-  }
-  for (i = 8; i; i--, (intensity <<= 1)) {
-    if (intensity & (1 << 7)) {
-      one();
-    } else {
-      zero();
-    }
-  }
+  uint8_t r, g, b;
+  r = color & 0x0F;
+  g = (color >> 4) & 0x0F;
+  b = (color >> 8) & 0x0F;
 
-  for (i=12; i; i--, (color <<= 1)) {
-    if (color & (1 << 11)) {
-      one();
-    } else {
-      zero();
-    }
-  }
-  end();
+  digitalWrite(pin_, HIGH);
+  delayMicroseconds(DELAYSHORT);
+
+  // LED Address
+  if (led & 0x20) { ONE(pin_); } else { ZERO(pin_); }
+  if (led & 0x10) { ONE(pin_); } else { ZERO(pin_); }
+  if (led & 0x08) { ONE(pin_); } else { ZERO(pin_); }
+  if (led & 0x04) { ONE(pin_); } else { ZERO(pin_); }
+  if (led & 0x02) { ONE(pin_); } else { ZERO(pin_); }
+  if (led & 0x01) { ONE(pin_); } else { ZERO(pin_); }
+
+  // Brightness
+  if (intensity & 0x80) { ONE(pin_); } else { ZERO(pin_); }
+  if (intensity & 0x40) { ONE(pin_); } else { ZERO(pin_); }
+  if (intensity & 0x20) { ONE(pin_); } else { ZERO(pin_); }
+  if (intensity & 0x10) { ONE(pin_); } else { ZERO(pin_); }
+  if (intensity & 0x08) { ONE(pin_); } else { ZERO(pin_); }
+  if (intensity & 0x04) { ONE(pin_); } else { ZERO(pin_); }
+  if (intensity & 0x02) { ONE(pin_); } else { ZERO(pin_); }
+  if (intensity & 0x01) { ONE(pin_); } else { ZERO(pin_); }
+
+  // Blue
+  if (b & 0x8) { ONE(pin_); } else { ZERO(pin_); }
+  if (b & 0x4) { ONE(pin_); } else { ZERO(pin_); }
+  if (b & 0x2) { ONE(pin_); } else { ZERO(pin_); }
+  if (b & 0x1) { ONE(pin_); } else { ZERO(pin_); }
+
+  // Green
+  if (g & 0x8) { ONE(pin_); } else { ZERO(pin_); }
+  if (g & 0x4) { ONE(pin_); } else { ZERO(pin_); }
+  if (g & 0x2) { ONE(pin_); } else { ZERO(pin_); }
+  if (g & 0x1) { ONE(pin_); } else { ZERO(pin_); }
+
+  // Red
+  if (r & 0x8) { ONE(pin_); } else { ZERO(pin_); }
+  if (r & 0x4) { ONE(pin_); } else { ZERO(pin_); }
+  if (r & 0x2) { ONE(pin_); } else { ZERO(pin_); }
+  if (r & 0x1) { ONE(pin_); } else { ZERO(pin_); }
+
+  digitalWrite(pin_, LOW);
+  delayMicroseconds(DELAYEND);
 }
 
 bool G35::set_color_if_in_range(uint8_t position, uint8_t intensity,
@@ -112,7 +96,6 @@ bool G35::set_color_if_in_range(uint8_t position, uint8_t intensity,
   set_color(position, intensity, color);
   return true;
 }
-
 
 // Returns 12-bit color from red, green, and blue components
 color_t G35::color(uint8_t r, uint8_t g, uint8_t b) {
@@ -133,7 +116,7 @@ color_t G35::color_hue(uint8_t h) {
 }
 
 void G35::fill_color(uint8_t begin, uint8_t count,
-                     uint8_t intensity, color_t color) {
+		     uint8_t intensity, color_t color) {
   while (count--) {
     set_color(begin++, intensity, color);
   }

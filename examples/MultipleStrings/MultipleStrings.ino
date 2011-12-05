@@ -11,9 +11,6 @@
 // How long each program should run.
 #define PROGRAM_DURATION_SECONDS (30)
 
-// Arduino pin number. Pin 13 will blink the on-board LED.
-#define OUT_PIN (13)
-
 #define LIGHT_COUNT (50)
 
 #define USING_TEENSY_AS_LEONARDO (0)

@@ -16,12 +16,12 @@
 // How long each program should run.
 #define PROGRAM_DURATION_SECONDS (30)
 
-// Arduino pin number. Pin 13 will blink the on-board LED.
-#define OUT_PIN (13)
-
 #define LIGHT_COUNT (50)
 
-G35 lights(OUT_PIN, LIGHT_COUNT);
+// Arduino pin number. Pin 13 will blink the on-board LED.
+#define G35_PIN (13)
+
+G35 lights(G35_PIN, LIGHT_COUNT);
 
 // -1 because SteadyWhite is more of a mode than a program.
 #define PROGRAM_COUNT (19 - 1)
