@@ -133,9 +133,13 @@ class Orbiter {
  Orbiter()
    : radius_((float)rand() / (float)RAND_MAX),
     angle_(2 * PI * (float)rand() / (float)RAND_MAX),
-    d_angle_(-0.01 + 0.02 * (float)rand() / (float)RAND_MAX),
+    d_angle_(0),
     x_(0),
     color_(G35::max_color(rand())) {
+    const float MIN_ACTION = 0.005;
+    while (d_angle_ < MIN_ACTION && d_angle_ > -MIN_ACTION) {
+      d_angle_ = -0.02 + 0.04 * (float)rand() / (float)RAND_MAX;
+    }
   }
 
  Orbiter(float radius, float d_angle)
@@ -183,7 +187,7 @@ class Orbit : public LightProgram {
 
       if (should_erase_ && last_x_[i] != x) {
         g35_.set_color(last_x_[i], G35::MAX_INTENSITY, COLOR_BLACK);
-	last_x_[i] = x;
+        last_x_[i] = x;
       }
       g35_.set_color(x, G35::MAX_INTENSITY, o->color());
     }
@@ -222,6 +226,5 @@ class Cylon : public LightProgram {
   Orbiter orbiter_;
   uint8_t last_x_;
 };
-
 
 #endif  // INCLUDE_G35_PLUS_PROGRAMS_H
