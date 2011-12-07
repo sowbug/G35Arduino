@@ -28,7 +28,7 @@ G35 lights_2(14, LIGHT_COUNT);
 #endif
 
 // -1 because SteadyWhite is more of a mode than a program.
-#define PROGRAM_COUNT (19 - 1)
+#define PROGRAM_COUNT (STOCK_PROGRAM_COUNT + PLUS_PROGRAM_COUNT - 1)
 LightProgram* CreateProgram(G35& lights, uint8_t program_index) {
   switch (program_index) {
   case 0: return new Orbit(lights, true);

@@ -88,8 +88,7 @@ class G35 {
   static color_t rainbow_color(uint16_t color);
 
   // Given an int value, returns a "max" color (one with R/G/B each set to
-  // 0 or 255, except for black and white). The mapping is arbitary but
-  // deterministic.
+  // 0 or 255, except for black). The mapping is arbitary but deterministic.
   static color_t max_color(uint16_t color);
 
   // Make all LEDs the same color starting at specified beginning LED

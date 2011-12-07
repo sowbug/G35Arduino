@@ -13,6 +13,8 @@
 
 #include <LightProgram.h>
 
+#define PLUS_PROGRAM_COUNT (7)
+
 class Meteorite : public LightProgram {
  public:
  Meteorite(G35& g35)

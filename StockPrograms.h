@@ -13,6 +13,8 @@
 
 #include <LightProgram.h>
 
+#define STOCK_PROGRAM_COUNT (13)
+
 class SteadyWhite : public LightProgram {
  public:
  SteadyWhite(G35& g35)
@@ -230,7 +232,9 @@ class FadeInFadeOutMultiColors : public LightProgram {
     switch (state_) {
     case 0:
       if (intensity_++ == 0) {
-        g35_.fill_sequence(rand(), 5, 0, G35::max_color);
+        // We mask off the last two bits so that the color segments are aligned
+        // from scene to scene.
+        g35_.fill_sequence(rand() & 0x7ffc, 4, 0, G35::max_color);
       }
       if (intensity_ == G35::MAX_INTENSITY) {
         state_ = 1;

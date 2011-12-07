@@ -24,7 +24,7 @@
 G35 lights(G35_PIN, LIGHT_COUNT);
 
 // -1 because SteadyWhite is more of a mode than a program.
-#define PROGRAM_COUNT (19 - 1)
+#define PROGRAM_COUNT (STOCK_PROGRAM_COUNT + PLUS_PROGRAM_COUNT - 1)
 LightProgram* CreateProgram(uint8_t program_index) {
   randomSeed(rand() + analogRead(0));
 
