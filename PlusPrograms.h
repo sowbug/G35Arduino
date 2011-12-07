@@ -114,8 +114,9 @@ class Pulse : public LightProgram {
 
   static bool pulser(uint16_t sequence, color_t& color, uint8_t& intensity) {
     const int PHASE = 32;
+    const int PULSE_RATE = 2;  // Above 1 is glitchy but IMO more attractive.
     color = G35::max_color((sequence + PHASE) / (PHASE * 2));
-    intensity = abs(PHASE - (int)(sequence) % (PHASE + PHASE));
+    intensity = abs(PHASE - (int)(sequence * PULSE_RATE) % (PHASE + PHASE));
     return true;
   }
 
@@ -124,92 +125,41 @@ class Pulse : public LightProgram {
   uint16_t sequence_;
 };
 
-class Cylon : public LightProgram {
- public:
- Cylon(G35& g35)
-   : LightProgram(g35),
-    last_light_shifted_((light_count_ << 8) - 1), x_(0), d2x_(-2),
-    color_(G35::max_color(rand())) {}
-
-  uint32_t Do() {
-    uint8_t old_x_pix = x_ >> 8;
-    dx_ += d2x_;
-    x_ += dx_;
-
-    bool moving_right = d2x_ > 0;
-    bool past_right = old_x_pix >= g35_.get_halfway_point();
-    if (moving_right == past_right) {
-      d2x_ = -d2x_;
-    }
-
-    if (x_ <= 0) {
-      x_ = 0;
-      dx_ = 0;
-    }
-    if (x_ > last_light_shifted_) {
-      x_ = last_light_shifted_;
-      dx_ = 0;
-    }
-
-    uint8_t x_pix = x_ >> 8;
-    if (old_x_pix != x_pix) {
-      g35_.set_color(old_x_pix, G35::MAX_INTENSITY, COLOR_BLACK);
-    }
-    g35_.set_color(x_pix, G35::MAX_INTENSITY, color_);
-
-    return bulb_frame_ >> 1;
-  }
-
- private:
-  int16_t last_light_shifted_;
-  int16_t x_;
-  int16_t dx_;
-  int16_t d2x_;
-  color_t color_;
-};
-
+// An Orbiter doesn't know about string length. Its coordinate system is
+// [0.0, 1.0], and it's the caller's job to scale that to real-world
+// values.
 class Orbiter {
  public:
  Orbiter()
-   : center_(rand()),
-    x_(rand()),
-    old_x_(0),
-    dx_(0),
-    d2x_(rand() % 10 - 5),
+   : radius_((float)rand() / (float)RAND_MAX),
+    angle_(2 * PI * (float)rand() / (float)RAND_MAX),
+    d_angle_(-0.01 + 0.02 * (float)rand() / (float)RAND_MAX),
+    x_(0),
     color_(G35::max_color(rand())) {
-    old_x_ = x_;
-    if (d2x_ == 0) {
-      d2x_ = 1;
-    }
+  }
+
+ Orbiter(float radius, float d_angle)
+   : radius_(radius),
+    angle_(0),
+    d_angle_(d_angle),
+    x_(0),
+    color_(G35::max_color(rand())) {
   }
 
   void Do() {
-    old_x_ = x_;
-    dx_ += d2x_;
-    x_ += dx_;
-
-    bool moving_right = d2x_ > 0;
-    bool past_center = x_ >= center_;
-    if (moving_right == past_center) {
-      d2x_ = -d2x_;
-    }
-
-    if (x_ <= 0) {
-      x_ = 0;
-      dx_ = 0;
-    }
+    x_ = sin(angle_) * radius_;
+    angle_ += d_angle_;
   }
 
-  int16_t x() { return x_; }
-  int16_t old_x() { return old_x_; }
+  float x() { return x_; }
+  uint8_t x_local(uint8_t range, uint8_t center) {
+    return ((uint8_t)(x_ * range + center)) % range;
+  }
   color_t color() { return color_; }
 
  private:
-  int16_t center_;
-  int16_t x_;
-  int16_t old_x_;
-  int16_t dx_;
-  int16_t d2x_;
+  float radius_, angle_, d_angle_;
+  float x_;
   color_t color_;
 };
 
@@ -219,22 +169,25 @@ class Orbit : public LightProgram {
    : LightProgram(g35),
     should_erase_(should_erase),
     count_(MAX_OBJECTS),
-    last_light_shifted_((light_count_ << 8) - 1),
-    light_count_(g35_.get_light_count()) {}
+    light_count_(g35_.get_light_count()) {
+    for (int i = 0; i < count_; ++i) {
+      orbiter_center_[i] = rand() % light_count_;
+    }
+  }
 
   uint32_t Do() {
     for (int i = 0; i < count_; ++i) {
       Orbiter *o = &orbiter_[i];
-      int16_t old_x = (o->old_x() >> 8) % light_count_;
       o->Do();
-      int16_t x = (o->x() >> 8) % light_count_;
+      uint8_t x = o->x_local(light_count_, orbiter_center_[i]);
 
-      if (should_erase_ && old_x != x) {
-        g35_.set_color(old_x, G35::MAX_INTENSITY, COLOR_BLACK);
+      if (should_erase_ && last_x_[i] != x) {
+        g35_.set_color(last_x_[i], G35::MAX_INTENSITY, COLOR_BLACK);
+	last_x_[i] = x;
       }
       g35_.set_color(x, G35::MAX_INTENSITY, o->color());
     }
-    return bulb_frame_;
+    return bulb_frame_ >> 1;
   }
 
  private:
@@ -244,6 +197,31 @@ class Orbit : public LightProgram {
   int16_t last_light_shifted_;
   int8_t light_count_;
   Orbiter orbiter_[MAX_OBJECTS];
+  uint8_t orbiter_center_[MAX_OBJECTS];
+  uint8_t last_x_[MAX_OBJECTS];
 };
+
+class Cylon : public LightProgram {
+ public:
+ Cylon(G35& g35) : LightProgram(g35), orbiter_(0.5, 0.01), last_x_(0) {}
+
+  uint32_t Do() {
+    orbiter_.Do();
+    uint8_t x = orbiter_.x_local(light_count_, light_count_ >> 1);
+
+    if (last_x_ != x) {
+      g35_.set_color(last_x_, G35::MAX_INTENSITY, COLOR_BLACK);
+      last_x_ = x;
+    }
+    g35_.set_color(x, G35::MAX_INTENSITY, orbiter_.color());
+
+    return bulb_frame_ >> 1;
+  }
+
+ private:
+  Orbiter orbiter_;
+  uint8_t last_x_;
+};
+
 
 #endif  // INCLUDE_G35_PLUS_PROGRAMS_H
