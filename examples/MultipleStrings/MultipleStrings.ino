@@ -49,6 +49,7 @@ LightProgram* CreateProgram(G35& lights, uint8_t program_index) {
   case 15: return new RedGreenChase(lights);
   case 16: return new Pulse(lights);
   case 17: return new Cylon(lights);
+  case 18: return new Stereo(lights);
   case PROGRAM_COUNT:
   default:
     // PROBLEM! PROGRAM_COUNT is wrong.
