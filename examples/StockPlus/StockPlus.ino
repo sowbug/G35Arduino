@@ -26,6 +26,8 @@ G35 lights(G35_PIN, LIGHT_COUNT);
 // -1 because SteadyWhite is more of a mode than a program.
 #define PROGRAM_COUNT (19 - 1)
 LightProgram* CreateProgram(uint8_t program_index) {
+  randomSeed(rand() + analogRead(0));
+
   switch (program_index) {
   case 0: return new Orbit(lights, true);
   case 1: return new Orbit(lights, false);
