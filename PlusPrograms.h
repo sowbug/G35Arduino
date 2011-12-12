@@ -298,7 +298,7 @@ class Worm {
     if (length < UNIT) {
       is_stretching_ = true;
     }
-    if (length >= UNIT * 2) {
+    if (length >= UNIT * 4) {
       is_stretching_ = false;
     }
     if (head_ <= 0) {
@@ -320,7 +320,7 @@ class Worm {
     }
   }
  private:
-  enum { UNIT = 4 };
+  enum { UNIT = 2 };
 
   float head_, tail_;
   float speed_, head_dir_, tail_dir_;
