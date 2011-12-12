@@ -239,7 +239,9 @@ class Stereo : public LightProgram {
     level1_(half_light_count_ * 0.1666),
     level2_(half_light_count_ * 0.1666),
     level3_(half_light_count_ * 0.1666),
-    step_(0), peak_(0) {}
+    step_(0), peak_(0) {
+    g35_.fill_color(0, light_count_, G35::MAX_INTENSITY, COLOR_BLACK);
+  }
 
   uint32_t Do() {
     float wave = level0_ + sin(step_) * level1_ + sin(step_ * .7) * level2_ +
