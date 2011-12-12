@@ -13,7 +13,7 @@
 
 #include <LightProgram.h>
 
-#define PLUS_PROGRAM_COUNT (7)
+#define PLUS_PROGRAM_COUNT (8)
 
 class Meteorite : public LightProgram {
  public:
@@ -272,6 +272,82 @@ class Stereo : public LightProgram {
   const float half_light_count_;
   const float level0_, level1_, level2_, level3_;
   float step_, peak_;
+};
+
+class Worm {
+ public:
+ Worm() : head_(0), tail_(0), speed_(0), head_dir_(0), tail_dir_(0),
+    is_stretching_(true), color_(G35::max_color(rand())) {
+    const float MIN = 0.1;
+    const float MAX = 0.6;
+    while (speed_ < MIN) {
+      speed_ = MAX * ((float)rand() / (float)RAND_MAX);
+    }
+    head_dir_ = tail_dir_ = speed_;
+  }
+
+  void Do(G35& g35) {
+    if (is_stretching_) {
+      g35.set_color(head_, G35::MAX_INTENSITY, color_);
+      head_ += head_dir_;
+    } else {
+      g35.set_color(tail_, G35::MAX_INTENSITY, COLOR_BLACK);
+      tail_ += tail_dir_;
+    }
+    int8_t length = abs(head_ - tail_);
+    if (length < UNIT) {
+      is_stretching_ = true;
+    }
+    if (length >= UNIT * 2) {
+      is_stretching_ = false;
+    }
+    if (head_ <= 0) {
+      head_ = 0;
+      head_dir_ = speed_;
+    }
+    uint8_t light_count = g35.get_light_count();
+    if (head_ >= light_count - 1) {
+      head_ = light_count - 1;
+      head_dir_ = -speed_;
+    }
+    if (tail_ <= 0) {
+      tail_ = 0;
+      tail_dir_ = speed_;
+    }
+    if (tail_ >= light_count - 1) {
+      tail_ = light_count - 1;
+      tail_dir_ = -speed_;
+    }
+  }
+ private:
+  enum { UNIT = 4 };
+
+  float head_, tail_;
+  float speed_, head_dir_, tail_dir_;
+  bool is_stretching_;
+  color_t color_;
+};
+
+class Inchworm : public LightProgram {
+ public:
+ Inchworm(G35& g35) : LightProgram(g35), count_(0), next_worm_(0) {
+    g35_.fill_color(0, light_count_, G35::MAX_INTENSITY, COLOR_BLACK);
+  }
+
+  uint32_t Do() {
+    for (int i = 0; i < count_; ++i) {
+      worms_[i].Do(g35_);
+    }
+    if (count_ < 6 && millis() > next_worm_) {
+      ++count_;
+      next_worm_ = millis() + 2000 + 1000 * count_;
+    }
+    return bulb_frame_;
+  }
+ private:
+  uint8_t count_;
+  uint32_t next_worm_;
+  Worm worms_[6];
 };
 
 #endif  // INCLUDE_G35_PLUS_PROGRAMS_H

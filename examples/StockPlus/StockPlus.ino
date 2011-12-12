@@ -29,7 +29,7 @@ LightProgram* CreateProgram(uint8_t program_index) {
   randomSeed(rand() + analogRead(0));
 
   switch (program_index) {
-  case 0: return new Orbit(lights, true);
+  case 0: return new Inchworm(lights);
   case 1: return new Orbit(lights, false);
   case 2: return new CrossOverWave(lights);
   case 3: return new ForwardWave(lights);
@@ -48,6 +48,7 @@ LightProgram* CreateProgram(uint8_t program_index) {
   case 16: return new Pulse(lights);
   case 17: return new Cylon(lights);
   case 18: return new Stereo(lights);
+  case 19: return new Orbit(lights, true);
   case PROGRAM_COUNT:
   default:
     // PROBLEM! PROGRAM_COUNT is wrong.
