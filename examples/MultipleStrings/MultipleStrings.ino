@@ -32,7 +32,7 @@ G35 lights_2(14, LIGHT_COUNT);
 LightProgram* CreateProgram(G35& lights, uint8_t program_index) {
   switch (program_index) {
   case 0: return new Inchworm(lights);
-  case 1: return new Orbit(lights, false);
+  case 1: return new Orbit(lights);
   case 2: return new CrossOverWave(lights);
   case 3: return new ForwardWave(lights);
   case 4: return new ChasingRainbow(lights);
@@ -50,7 +50,7 @@ LightProgram* CreateProgram(G35& lights, uint8_t program_index) {
   case 16: return new Pulse(lights);
   case 17: return new Cylon(lights);
   case 18: return new Stereo(lights);
-  case 19: return new Orbit(lights, true);
+  case 19: return new OrbitSmudge(lights);
   case PROGRAM_COUNT:
   default:
     // PROBLEM! PROGRAM_COUNT is wrong.

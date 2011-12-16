@@ -171,14 +171,11 @@ class Orbiter {
 
 class Orbit : public LightProgram {
  public:
- Orbit(G35& g35, bool should_erase)
+ Orbit(G35& g35)
    : LightProgram(g35),
-    should_erase_(should_erase),
+    should_erase_(true),
     count_(MAX_OBJECTS),
     light_count_(g35_.get_light_count()) {
-    for (int i = 0; i < count_; ++i) {
-      orbiter_center_[i] = rand() % light_count_;
-    }
   }
 
   uint32_t Do() {
@@ -196,6 +193,14 @@ class Orbit : public LightProgram {
     return bulb_frame_ >> 1;
   }
 
+ protected:
+ Orbit(G35& g35, bool should_erase)
+   : LightProgram(g35),
+    should_erase_(should_erase),
+    count_(MAX_OBJECTS),
+    light_count_(g35_.get_light_count()) {
+  }
+
  private:
   enum { MAX_OBJECTS = 10 };
   bool should_erase_;
@@ -205,6 +210,17 @@ class Orbit : public LightProgram {
   Orbiter orbiter_[MAX_OBJECTS];
   uint8_t orbiter_center_[MAX_OBJECTS];
   uint8_t last_x_[MAX_OBJECTS];
+
+  void set_centers() {
+    for (int i = 0; i < count_; ++i) {
+      orbiter_center_[i] = rand() % light_count_;
+    }
+  }
+};
+
+class OrbitSmudge : public Orbit {
+ public:
+ OrbitSmudge(G35& g35) : Orbit(g35, false) {}
 };
 
 class Cylon : public LightProgram {
