@@ -29,6 +29,9 @@ class LightProgram {
   uint8_t bulb_frame_;
 };
 
+// A collection of LightProgram classes. Putting them here makes it much
+// easier on app developers because they don't have to create a switch
+// statement for every set of programs they're interested in including.
 class LightProgramGroup {
  public:
   virtual LightProgram* CreateProgram(G35& lights, uint8_t program_index) = 0;
