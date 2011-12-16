@@ -13,7 +13,8 @@
 
 #include <LightProgram.h>
 
-#define STOCK_PROGRAM_COUNT (13)
+// We don't count SteadyWhite because it's more of a mode than a program.
+#define STOCK_PROGRAM_COUNT (12)
 
 class SteadyWhite : public LightProgram {
  public:
@@ -144,7 +145,7 @@ class FadeInFadeOutSolidColors : public LightProgram {
     if (intensity_ == 0) {
       color_t new_color = color_;
       do {
-	color_ = G35::max_color(rand());
+        color_ = G35::max_color(rand());
       } while (new_color == color_);
 
       g35_.set_color(G35::BROADCAST_BULB, 0, COLOR_BLACK);
@@ -341,6 +342,32 @@ class ChasingWhiteRedBlue : public LightProgram {
  private:
   uint8_t count_;
   uint16_t sequence_;
+};
+
+class StockProgramGroup : public LightProgramGroup {
+ public:
+  enum { ProgramCount = 12 };
+
+  virtual LightProgram* CreateProgram(G35& lights, uint8_t program_index) {
+    switch (program_index) {
+    case 0: return new CrossOverWave(lights);
+    case 1: return new ForwardWave(lights);
+    case 2: return new ChasingRainbow(lights);
+    case 3: return new AlternateDirectionalWave(lights);
+    case 4: return new FadeInFadeOutSolidColors(lights);
+    case 5: return new BidirectionalWave(lights);
+    case 6: return new ChasingSolidColors(lights);
+    case 7: return new FadeInFadeOutMultiColors(lights);
+    case 8: return new ChasingTwoColors(lights);
+    case 9: return new RandomSparkling(lights);
+    case 10: return new ChasingMultiColors(lights);
+    case 11: return new ChasingWhiteRedBlue(lights);
+    case ProgramCount:
+    default:
+      // PROBLEM! ProgramCount is wrong.
+      return NULL;
+    }
+  }
 };
 
 #endif  // INCLUDE_G35_STOCK_PROGRAMS_H
