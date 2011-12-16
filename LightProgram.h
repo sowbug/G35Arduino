@@ -34,6 +34,4 @@ class LightProgramGroup {
   virtual LightProgram* CreateProgram(G35& lights, uint8_t program_index) = 0;
 };
 
-typedef LightProgram* (*LightProgramConstructor)(G35&);
-
 #endif  // INCLUDE_G35_LIGHT_PROGRAMS_H
