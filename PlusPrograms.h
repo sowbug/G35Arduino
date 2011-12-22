@@ -25,23 +25,7 @@ class PlusProgramGroup : public LightProgramGroup {
  public:
   enum { ProgramCount = 9 };
 
-  virtual LightProgram* CreateProgram(G35& lights, uint8_t program_index) {
-    switch (program_index) {
-    case 0: return new Meteorite(lights);
-    case 1: return new Twinkle(lights);
-    case 2: return new RedGreenChase(lights);
-    case 3: return new Pulse(lights);
-    case 4: return new Orbit(lights);
-    case 5: return new OrbitSmudge(lights);
-    case 6: return new Cylon(lights);
-    case 7: return new Stereo(lights);
-    case 8: return new Inchworm(lights);
-    case ProgramCount:
-    default:
-      // PROBLEM! ProgramCount is wrong.
-      return NULL;
-    }
-  }
+  virtual LightProgram* CreateProgram(G35& lights, uint8_t program_index);
 };
 
 #endif  // INCLUDE_G35_PLUS_PROGRAMS_H
