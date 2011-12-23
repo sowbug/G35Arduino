@@ -12,7 +12,7 @@
 
 LightProgram* PlusProgramGroup::CreateProgram(G35& lights,
                                               uint8_t program_index) {
-  switch (program_index) {
+  switch (program_index % ProgramCount) {
   case 0: return new Meteorite(lights);
   case 1: return new Twinkle(lights);
   case 2: return new RedGreenChase(lights);
@@ -22,9 +22,5 @@ LightProgram* PlusProgramGroup::CreateProgram(G35& lights,
   case 6: return new Cylon(lights);
   case 7: return new Stereo(lights);
   case 8: return new Inchworm(lights);
-  case ProgramCount:
-  default:
-    // PROBLEM! ProgramCount is wrong.
-    return NULL;
   }
 }

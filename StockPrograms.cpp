@@ -256,7 +256,7 @@ color_t ChasingWhiteRedBlue::red_white_blue(uint16_t sequence) {
 
 LightProgram* StockProgramGroup::CreateProgram(G35& lights,
                                                uint8_t program_index) {
-  switch (program_index) {
+  switch (program_index % ProgramCount) {
   case 0: return new CrossOverWave(lights);
   case 1: return new ForwardWave(lights);
   case 2: return new ChasingRainbow(lights);
@@ -269,9 +269,5 @@ LightProgram* StockProgramGroup::CreateProgram(G35& lights,
   case 9: return new RandomSparkling(lights);
   case 10: return new ChasingMultiColors(lights);
   case 11: return new ChasingWhiteRedBlue(lights);
-  case ProgramCount:
-  default:
-    // PROBLEM! ProgramCount is wrong.
-    return NULL;
   }
 }
