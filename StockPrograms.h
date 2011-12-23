@@ -62,7 +62,9 @@ class AlternateDirectionalWave : public LightProgram {
   uint32_t Do();
 
  private:
-  uint8_t x_;
+  int16_t x_;
+  int16_t x_target_;
+  int16_t x_other_target_;
   int8_t direction_;
   color_t color_;
 };

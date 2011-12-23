@@ -34,16 +34,23 @@ uint16_t G35StringGroup::get_light_count() {
 
 void G35StringGroup::set_color(uint8_t bulb, uint8_t intensity, color_t color) {
   uint8_t string = 0;
-  while (bulb > string_offsets_[string]) {
+  while (bulb > string_offsets_[string] && string < string_count_) {
     bulb -= string_offsets_[string++];
   }
-  strings_[string]->set_color(bulb, intensity, color);
+  if (string < string_count_) {
+    strings_[string]->set_color(bulb, intensity, color);
+  } else {
+    // A program is misbehaving.
+#if 0
+    Serial.println("out of bounds");
+#endif
+  }
 }
 
- void G35StringGroup::broadcast_intensity(uint8_t intensity) {
-   for (uint8_t i = 0; i < string_count_; ++i) {
-     strings_[i]->broadcast_intensity(intensity);
-   }
+void G35StringGroup::broadcast_intensity(uint8_t intensity) {
+  for (uint8_t i = 0; i < string_count_; ++i) {
+    strings_[i]->broadcast_intensity(intensity);
+  }
 }
 
 uint8_t G35StringGroup::get_broadcast_bulb() {

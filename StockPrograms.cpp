@@ -73,30 +73,26 @@ uint32_t ChasingRainbow::Do() {
 }
 
 AlternateDirectionalWave::AlternateDirectionalWave(G35& g35)
-  : LightProgram(g35), x_(light_count_),
-    direction_(-1) {}
+  : LightProgram(g35), x_(0), x_target_(light_count_),
+    x_other_target_(-1), direction_(1), color_(G35::max_color(rand())) {}
 
 uint32_t AlternateDirectionalWave::Do() {
-  bool hit_end = false;
-  if (x_ == light_count_) {
-    x_ = 0;
-    hit_end = true;
-  } else if (x_ == -1) {
-    x_ = g35_.get_last_light();
-    hit_end = true;
-  }
-  if (hit_end) {
+  g35_.set_color(x_, G35::MAX_INTENSITY, color_);
+  x_ += direction_;
+
+  if (x_ == x_target_) {
     direction_ = -direction_;
+    x_ += direction_;
+    int16_t t = x_target_;
+    x_target_ = x_other_target_;
+    x_other_target_ = t;
     color_t old_color = color_;
     do {
       color_ = G35::max_color(rand());
     } while (old_color == color_);
-    return 500;
-  } else {
-    g35_.set_color(x_, G35::MAX_INTENSITY, color_);
-    x_ += direction_;
-    return bulb_frame_;
+    return 1000;
   }
+  return bulb_frame_;
 }
 
 FadeInFadeOutSolidColors::FadeInFadeOutSolidColors(G35& g35)
