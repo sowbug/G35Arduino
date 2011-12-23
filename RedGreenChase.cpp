@@ -16,7 +16,7 @@ RedGreenChase::RedGreenChase(G35& g35)
     sequence_(0) {}
 
 uint32_t RedGreenChase::Do() {
-  g35_.fill_sequence(0, count_, sequence_, 5, G35::MAX_INTENSITY, red_green);
+  g35_.fill_sequence(0, count_, sequence_, 5, 255, red_green);
   if (count_ < light_count_) {
     ++count_;
   } else {

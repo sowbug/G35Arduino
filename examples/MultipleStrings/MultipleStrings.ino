@@ -2,8 +2,7 @@
 //
 // By Mike Tsao <http://github.com/sowbug>
 
-#include <G35.h>
-#include <LightProgram.h>
+#include <G35String.h>
 #include <ProgramRunner.h>
 #include <StockPrograms.h>
 #include <PlusPrograms.h>
@@ -19,12 +18,12 @@
 // A Teensy 2.0 that's been flashed with the Arduino Leonardo bootloader (thus
 // permanently destroying the HalfKay bootloader that ships with the Teensy).
 // The first string is connected to D6, and the second to B4. 
-G35 lights_1(12, LIGHT_COUNT);
-G35 lights_2(8, LIGHT_COUNT);
+G35String lights_1(12, LIGHT_COUNT);
+G35String lights_2(8, LIGHT_COUNT);
 #else
 // Standard Arduino, string 1 on Pin 13, string 2 on Pin 14.
-G35 lights_1(13, LIGHT_COUNT);
-G35 lights_2(14, LIGHT_COUNT);
+G35String lights_1(13, LIGHT_COUNT);
+G35String lights_2(14, LIGHT_COUNT);
 #endif
 
 const int PROGRAM_COUNT = StockProgramGroup::ProgramCount +
@@ -66,12 +65,12 @@ void setup() {
   randomSeed(analogRead(0));
 
   delay(50);
-  lights_1.enumerate_forward();
-  lights_2.enumerate_forward();
+  lights_1.enumerate();
+  lights_2.enumerate();
   delay(50);
 
-  lights_1.test_patterns();
-  lights_2.test_patterns();
+  lights_1.do_test_patterns();
+  lights_2.do_test_patterns();
 }
 
 void loop() {

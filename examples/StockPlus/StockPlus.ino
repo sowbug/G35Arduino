@@ -7,8 +7,7 @@
 //
 // See http://www.youtube.com/watch?v=7al1vIinhuo for original patterns.
 
-#include <G35.h>
-#include <LightProgram.h>
+#include <G35String.h>
 #include <ProgramRunner.h>
 #include <StockPrograms.h>
 #include <PlusPrograms.h>
@@ -21,7 +20,7 @@
 // Arduino pin number. Pin 13 will blink the on-board LED.
 #define G35_PIN (13)
 
-G35 lights(G35_PIN, LIGHT_COUNT);
+G35String lights(G35_PIN, LIGHT_COUNT);
 
 const int PROGRAM_COUNT = StockProgramGroup::ProgramCount +
   PlusProgramGroup::ProgramCount;
@@ -51,10 +50,10 @@ void setup() {
   randomSeed(analogRead(0));
 
   delay(50);
-  lights.enumerate_forward();
+  lights.enumerate();
   delay(50);
 
-  lights.test_patterns();
+  lights.do_test_patterns();
 }
 
 void loop() {

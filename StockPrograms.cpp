@@ -17,7 +17,7 @@ SteadyWhite::SteadyWhite(G35& g35)
 
 uint32_t SteadyWhite::Do() {
   if (intensity_ <= G35::MAX_INTENSITY) {
-    g35_.set_color(G35::BROADCAST_BULB, intensity_++, COLOR_BLACK);
+    g35_.broadcast_intensity(intensity_++);
     return bulb_frame_;
   }
   return 1000;
@@ -109,7 +109,7 @@ uint32_t FadeInFadeOutSolidColors::Do() {
       color_ = G35::max_color(rand());
     } while (new_color == color_);
 
-    g35_.set_color(G35::BROADCAST_BULB, 0, COLOR_BLACK);
+    g35_.broadcast_intensity(0);
     g35_.fill_color(0, light_count_, 0, color_);
     d_intensity_ = 1;
   }
@@ -117,9 +117,9 @@ uint32_t FadeInFadeOutSolidColors::Do() {
     d_intensity_ = -1;
   }
   intensity_ += d_intensity_;
-  g35_.set_color(G35::BROADCAST_BULB, intensity_, COLOR_BLACK);
+  g35_.broadcast_intensity(intensity_);
 
-  return 500 / G35::BROADCAST_BULB;
+  return 10;
 }
 
 BidirectionalWave::BidirectionalWave(G35& g35)
@@ -185,9 +185,9 @@ uint32_t FadeInFadeOutMultiColors::Do() {
     }
     break;
   }
-  g35_.set_color(G35::BROADCAST_BULB, intensity_, COLOR_BLACK);
+  g35_.broadcast_intensity(intensity_);
 
-  return 500 / G35::BROADCAST_BULB;
+  return 10;
 }
 
 ChasingTwoColors::ChasingTwoColors(G35& g35)
@@ -233,8 +233,7 @@ ChasingWhiteRedBlue::ChasingWhiteRedBlue(G35& g35)
   : LightProgram(g35), count_(1), sequence_(0) {}
 
 uint32_t ChasingWhiteRedBlue::Do() {
-  g35_.fill_sequence(0, count_, sequence_, 3, G35::MAX_INTENSITY,
-                     red_white_blue);
+  g35_.fill_sequence(0, count_, sequence_, 3, G35::MAX_INTENSITY, red_white_blue);
   if (count_ < light_count_) {
     ++count_;
   } else {
@@ -257,22 +256,22 @@ color_t ChasingWhiteRedBlue::red_white_blue(uint16_t sequence) {
 
 LightProgram* StockProgramGroup::CreateProgram(G35& lights,
                                                uint8_t program_index) {
-    switch (program_index) {
-    case 0: return new CrossOverWave(lights);
-    case 1: return new ForwardWave(lights);
-    case 2: return new ChasingRainbow(lights);
-    case 3: return new AlternateDirectionalWave(lights);
-    case 4: return new FadeInFadeOutSolidColors(lights);
-    case 5: return new BidirectionalWave(lights);
-    case 6: return new ChasingSolidColors(lights);
-    case 7: return new FadeInFadeOutMultiColors(lights);
-    case 8: return new ChasingTwoColors(lights);
-    case 9: return new RandomSparkling(lights);
-    case 10: return new ChasingMultiColors(lights);
-    case 11: return new ChasingWhiteRedBlue(lights);
-    case ProgramCount:
-    default:
-      // PROBLEM! ProgramCount is wrong.
-      return NULL;
-    }
+  switch (program_index) {
+  case 0: return new CrossOverWave(lights);
+  case 1: return new ForwardWave(lights);
+  case 2: return new ChasingRainbow(lights);
+  case 3: return new AlternateDirectionalWave(lights);
+  case 4: return new FadeInFadeOutSolidColors(lights);
+  case 5: return new BidirectionalWave(lights);
+  case 6: return new ChasingSolidColors(lights);
+  case 7: return new FadeInFadeOutMultiColors(lights);
+  case 8: return new ChasingTwoColors(lights);
+  case 9: return new RandomSparkling(lights);
+  case 10: return new ChasingMultiColors(lights);
+  case 11: return new ChasingWhiteRedBlue(lights);
+  case ProgramCount:
+  default:
+    // PROBLEM! ProgramCount is wrong.
+    return NULL;
   }
+}

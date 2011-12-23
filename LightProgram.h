@@ -24,7 +24,7 @@ class LightProgram {
   // this function should be called again.
   virtual uint32_t Do() = 0;
  protected:
-  G35 g35_;
+  G35& g35_;
   uint8_t light_count_;
   uint8_t bulb_frame_;
 };

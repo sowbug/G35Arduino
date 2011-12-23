@@ -17,10 +17,10 @@ uint32_t Cylon::Do() {
   uint8_t x = orbiter_.x_local(light_count_, light_count_ >> 1);
 
   if (last_x_ != x) {
-    g35_.set_color(last_x_, G35::MAX_INTENSITY, COLOR_BLACK);
+    g35_.set_color(last_x_, 255, COLOR_BLACK);
     last_x_ = x;
   }
-  g35_.set_color(x, G35::MAX_INTENSITY, orbiter_.color());
+  g35_.set_color(x, 255, orbiter_.color());
 
   return bulb_frame_ >> 1;
 }

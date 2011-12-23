@@ -23,10 +23,10 @@ uint32_t  Orbit::Do() {
     uint8_t x = o->x_local(light_count_, orbiter_center_[i]);
 
     if (should_erase_ && last_x_[i] != x) {
-      g35_.set_color(last_x_[i], G35::MAX_INTENSITY, COLOR_BLACK);
+      g35_.set_color(last_x_[i], 255, COLOR_BLACK);
       last_x_[i] = x;
     }
-    g35_.set_color(x, G35::MAX_INTENSITY, o->color());
+    g35_.set_color(x, 255, o->color());
   }
   return bulb_frame_ >> 1;
 }

@@ -13,79 +13,7 @@
 
 #include <G35.h>
 
-G35::G35(int pin, int light_count) {
-  pinMode(pin, OUTPUT);
-  pin_ = pin;
-  light_count_ = light_count;
-}
-
-#define MHZ_20 (0)  // else 16MHz, standard Arduino/Teensy
-#if MHZ_20
-#define DELAYLONG 25    // should be ~ 20uS long
-#define DELAYSHORT 11   // should be ~ 10uS long
-#else
-#define DELAYLONG 17    // should be ~ 20uS long
-#define DELAYSHORT 7   // should be ~ 10uS long
-#endif
-#define DELAYEND 40     // should be ~ 30uS long
-
-#define ZERO(x) digitalWrite(x, LOW);           \
-  delayMicroseconds(DELAYSHORT);                \
-  digitalWrite(x, HIGH);                        \
-  delayMicroseconds(DELAYLONG);
-
-#define ONE(x) digitalWrite(x, LOW);            \
-  delayMicroseconds(DELAYLONG);                 \
-  digitalWrite(x, HIGH);                        \
-  delayMicroseconds(DELAYSHORT);
-
-void G35::set_color(uint8_t led, uint8_t intensity, color_t color) {
-  uint8_t r, g, b;
-  r = color & 0x0F;
-  g = (color >> 4) & 0x0F;
-  b = (color >> 8) & 0x0F;
-
-  digitalWrite(pin_, HIGH);
-  delayMicroseconds(DELAYSHORT);
-
-  // LED Address
-  if (led & 0x20) { ONE(pin_); } else { ZERO(pin_); }
-  if (led & 0x10) { ONE(pin_); } else { ZERO(pin_); }
-  if (led & 0x08) { ONE(pin_); } else { ZERO(pin_); }
-  if (led & 0x04) { ONE(pin_); } else { ZERO(pin_); }
-  if (led & 0x02) { ONE(pin_); } else { ZERO(pin_); }
-  if (led & 0x01) { ONE(pin_); } else { ZERO(pin_); }
-
-  // Brightness
-  if (intensity & 0x80) { ONE(pin_); } else { ZERO(pin_); }
-  if (intensity & 0x40) { ONE(pin_); } else { ZERO(pin_); }
-  if (intensity & 0x20) { ONE(pin_); } else { ZERO(pin_); }
-  if (intensity & 0x10) { ONE(pin_); } else { ZERO(pin_); }
-  if (intensity & 0x08) { ONE(pin_); } else { ZERO(pin_); }
-  if (intensity & 0x04) { ONE(pin_); } else { ZERO(pin_); }
-  if (intensity & 0x02) { ONE(pin_); } else { ZERO(pin_); }
-  if (intensity & 0x01) { ONE(pin_); } else { ZERO(pin_); }
-
-  // Blue
-  if (b & 0x8) { ONE(pin_); } else { ZERO(pin_); }
-  if (b & 0x4) { ONE(pin_); } else { ZERO(pin_); }
-  if (b & 0x2) { ONE(pin_); } else { ZERO(pin_); }
-  if (b & 0x1) { ONE(pin_); } else { ZERO(pin_); }
-
-  // Green
-  if (g & 0x8) { ONE(pin_); } else { ZERO(pin_); }
-  if (g & 0x4) { ONE(pin_); } else { ZERO(pin_); }
-  if (g & 0x2) { ONE(pin_); } else { ZERO(pin_); }
-  if (g & 0x1) { ONE(pin_); } else { ZERO(pin_); }
-
-  // Red
-  if (r & 0x8) { ONE(pin_); } else { ZERO(pin_); }
-  if (r & 0x4) { ONE(pin_); } else { ZERO(pin_); }
-  if (r & 0x2) { ONE(pin_); } else { ZERO(pin_); }
-  if (r & 0x1) { ONE(pin_); } else { ZERO(pin_); }
-
-  digitalWrite(pin_, LOW);
-  delayMicroseconds(DELAYEND);
+G35::G35() : light_count_(0) {
 }
 
 bool G35::set_color_if_in_range(uint8_t position, uint8_t intensity,
@@ -133,8 +61,7 @@ void G35::fill_sequence(uint8_t begin, uint8_t count,
                         uint8_t intensity,
                         color_t (*sequence_func)(uint16_t sequence)) {
   while (count--) {
-    set_color(begin + count, intensity,
-              sequence_func(sequence++ / span_size));
+    set_color(begin + count, intensity, sequence_func(sequence++ / span_size));
   }
 }
 
@@ -154,43 +81,6 @@ void G35::fill_sequence(uint8_t begin, uint8_t count,
     sequence_func(sequence++ / span_size, color, intensity);
     set_color(begin + count, intensity, color);
   }
-}
-
-void G35::enumerate(bool reverse) {
-  uint8_t count = light_count_;
-  uint8_t bulb = reverse ? light_count_ - 1 : 0;
-  int8_t delta = reverse ? -1 : 1;
-  while (count--) {
-    set_color(bulb, MAX_INTENSITY, COLOR_BLACK);
-    bulb += delta;
-  }
-}
-
-void G35::enumerate_forward() {
-  enumerate(false);
-}
-
-void G35::enumerate_reverse() {
-  enumerate(true);
-}
-
-void G35::test_patterns() {
-  const uint8_t d = 1000 / light_count_;
-  const uint8_t last_light = light_count_ - 1;
-  fill_sequence(0, light_count_, 0, 1, 0, rainbow_color);
-  fade_in(1);
-  delay(500);
-  fade_out(1);
-  for (uint8_t i = 0; i < light_count_; ++i) {
-    set_color(i, MAX_INTENSITY, COLOR_GREEN);
-    set_color(last_light - i, MAX_INTENSITY, COLOR_BLUE);
-    if (i > 0) {
-      set_color(i - 1, MAX_INTENSITY, COLOR_BLACK);
-      set_color(last_light - i + 1, MAX_INTENSITY, COLOR_BLACK);
-    }
-    delay(d);
-  }
-  fill_color(0, light_count_, MAX_INTENSITY, COLOR_BLACK);
 }
 
 color_t G35::rainbow_color(uint16_t color) {
@@ -239,16 +129,6 @@ color_t G35::max_color(uint16_t color) {
   }
 }
 
-void G35::fade_in(uint8_t delay_msec) {
-  for (int i = 0; i <= MAX_INTENSITY; ++i) {
-    set_color(BROADCAST_BULB, i, COLOR_BLACK);
-    delay(delay_msec);
-  }
-}
-
-void G35::fade_out(uint8_t delay_msec) {
-  for (int i = MAX_INTENSITY; i >= 0; --i) {
-    set_color(BROADCAST_BULB, i, COLOR_BLACK);
-    delay(delay_msec);
-  }
+void G35::broadcast_intensity(uint8_t intensity) {
+  set_color(get_broadcast_bulb(), intensity, COLOR_BLACK);
 }

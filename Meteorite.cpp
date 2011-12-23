@@ -36,7 +36,7 @@ uint32_t Meteorite::Do() {
 
   for (int i = 0; i < TAIL; ++i) {
     int pos = position_ - i;
-    g35_.set_color_if_in_range(pos, G35::MAX_INTENSITY, colors_[i]);
+    g35_.set_color_if_in_range(pos, 255, colors_[i]);
   }
   ++position_;
   return d_;

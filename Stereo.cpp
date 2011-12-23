@@ -18,7 +18,7 @@ Stereo::Stereo(G35& g35) : LightProgram(g35),
                            level2_(half_light_count_ * 0.1666),
                            level3_(half_light_count_ * 0.1666),
                            step_(0), peak_(0) {
-  g35_.fill_color(0, light_count_, G35::MAX_INTENSITY, COLOR_BLACK);
+  g35_.fill_color(0, light_count_, 255, COLOR_BLACK);
 }
 
 uint32_t Stereo::Do() {
@@ -33,15 +33,15 @@ uint32_t Stereo::Do() {
   }
   uint8_t i = wave;
   while (i--) {
-    g35_.set_color(i, G35::MAX_INTENSITY, COLOR_GREEN);
-    g35_.set_color(light_count_ - i, G35::MAX_INTENSITY, COLOR_GREEN);
+    g35_.set_color(i, 255, COLOR_GREEN);
+    g35_.set_color(light_count_ - i, 255, COLOR_GREEN);
   }
   uint8_t halfway = g35_.get_halfway_point();
   uint8_t peak_i = peak_;
   for (i = wave; i < halfway; ++i) {
     uint8_t color = i == peak_i ? COLOR_RED : COLOR_BLACK;
-    g35_.set_color(i, G35::MAX_INTENSITY, color);
-    g35_.set_color(light_count_ - i, G35::MAX_INTENSITY, color);
+    g35_.set_color(i, 255, color);
+    g35_.set_color(light_count_ - i, 255, color);
   }
   step_ += 0.4;
   return bulb_frame_;
