@@ -1,6 +1,8 @@
 Introduction
 ============
 
+![G-35 Lights, Green](images/green_lights.jpg "G-35 Lights")
+
 Read [the blog post](http://www.deepdarc.com/2010/11/27/hacking-christmas-lights/)
 that started it all.
 
