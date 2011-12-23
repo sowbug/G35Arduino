@@ -62,14 +62,14 @@ class G35 {
   };
 
   virtual uint16_t get_light_count() = 0;
-  virtual uint16_t get_last_light() { return light_count_ - 1; }
-  virtual uint16_t get_halfway_point() { return light_count_ / 2; }
+  virtual uint16_t get_last_light() { return get_light_count() - 1; }
+  virtual uint16_t get_halfway_point() { return get_light_count() / 2; }
 
   // One bulb's share of a second, in milliseconds
-  virtual uint8_t get_bulb_frame() { return 1000 / light_count_; }
+  virtual uint8_t get_bulb_frame() { return 1000 / get_light_count(); }
 
   // Turn on a specific LED with a color and brightness
-  virtual void set_color(uint8_t led, uint8_t intensity, color_t color) = 0;
+  virtual void set_color(uint8_t bulb, uint8_t intensity, color_t color) = 0;
 
   // Like set_color, but doesn't explode with positions out of range
   virtual bool set_color_if_in_range(uint8_t led, uint8_t intensity,
@@ -108,7 +108,6 @@ class G35 {
  protected:
   uint16_t light_count_;
 
-  virtual uint8_t get_max_intensity() = 0;
   virtual uint8_t get_broadcast_bulb() = 0;
 };
 

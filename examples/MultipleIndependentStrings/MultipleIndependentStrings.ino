@@ -21,9 +21,9 @@
 G35String lights_1(12, LIGHT_COUNT);
 G35String lights_2(8, LIGHT_COUNT);
 #else
-// Standard Arduino, string 1 on Pin 13, string 2 on Pin 14.
+// Standard Arduino, string 1 on Pin 13, string 2 on Pin 12.
 G35String lights_1(13, LIGHT_COUNT);
-G35String lights_2(14, LIGHT_COUNT);
+G35String lights_2(12, LIGHT_COUNT);
 #endif
 
 const int PROGRAM_COUNT = StockProgramGroup::ProgramCount +

@@ -35,7 +35,6 @@ class G35String : public G35 {
   void do_test_patterns();
 
  protected:
-  virtual uint8_t get_max_intensity() { return MAX_INTENSITY; }
   virtual uint8_t get_broadcast_bulb() { return BROADCAST_BULB; }
 
  private:
