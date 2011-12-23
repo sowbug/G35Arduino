@@ -15,7 +15,7 @@ Meteorite::Meteorite(G35& g35)
     position_(g35_.get_last_light() + TAIL) {}
 
 uint32_t Meteorite::Do() {
-  if (position_ == g35_.get_last_light() + TAIL) {
+  if (position_ == static_cast<int16_t>(g35_.get_last_light()) + TAIL) {
     position_ = 0;
     uint8_t r, g, b;
     r = rand() > (RAND_MAX / 2) ? 15 : 0;

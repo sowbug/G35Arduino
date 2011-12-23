@@ -23,4 +23,7 @@ LightProgram* PlusProgramGroup::CreateProgram(G35& lights,
   case 7: return new Stereo(lights);
   case 8: return new Inchworm(lights);
   }
+
+  // not reached
+  return NULL;
 }

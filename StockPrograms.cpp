@@ -266,4 +266,7 @@ LightProgram* StockProgramGroup::CreateProgram(G35& lights,
   case 10: return new ChasingMultiColors(lights);
   case 11: return new ChasingWhiteRedBlue(lights);
   }
+
+  // not reached
+  return NULL;
 }
