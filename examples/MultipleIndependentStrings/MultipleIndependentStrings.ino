@@ -1,4 +1,4 @@
-// A demonstration of multiple strings on a single controller.
+// A demonstration of multiple independent strings on a single controller.
 //
 // By Mike Tsao <http://github.com/sowbug>
 
@@ -53,7 +53,9 @@ LightProgram* CreateProgram_1(uint8_t program_index) {
 }
 
 LightProgram* CreateProgram_2(uint8_t program_index) {
-  return CreateProgram(lights_2, program_index);
+  // If you'd prefer both strings to simultaneously run individual instances of
+  // the same program, remove the + 1 offset.
+  return CreateProgram(lights_2, program_index + 1);
 }
 
 ProgramRunner runner_1(CreateProgram_1, PROGRAM_COUNT,
