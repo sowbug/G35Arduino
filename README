@@ -6,12 +6,40 @@ Here's the blog post that started it all:
   http://www.deepdarc.com/2010/11/27/hacking-christmas-lights/
 
 This library makes it easy to replace the controller in these lights
-with an Arduino, and to run much better light programs. It's pretty
-easy to make new programs, too!
+with an Arduino, and to run much better light programs. If you can
+program C or Processing, it's pretty easy to make new programs, too!
 
 See a demo at http://www.youtube.com/watch?v=QyKt7tHV-EM. There is also
 a not-awful professional demo of the original, unmodified hardware at
 http://www.geholidaylighting.com/holiday-lighting/led/color-effects.
+
+Features
+========
+
+- With your Arduino, Teensy, or pile of laundry lint that happens to
+  contain an Atmel AVR ATMega of some kind, G35Arduino becomes a
+  splice-in replacement for the stock G35 controller. Contains versions
+  of the same programs that ship with the lights. Your spouse won't know
+  the difference!
+
+- Also contains custom programs: Inchworm, Orbit, Cylon, Meteorite,
+  just to name a few!
+
+- Easy to add your own programs. If you can make it through the Arduino
+  Blink tutorial, you can probably write your own light program!
+
+- Synchronizes multiple strings. Have them each run individual instances
+  of the same light program. Have them each run different programs, but
+  with synchronized program changes. Or combine as many strings as you
+  want into a single mondo gigantic virtual string! (Number of physical
+  strings is limited by the number of output pins on your
+  microcontroller, as well as the memory requirements of the running
+  light programs.)
+
+- Express your individualism! G35Arduino operates completely
+  independently of requests from Twitter, Facebook, SMS, XBee, neighbors,
+  and drive-thru spectators. You bought 'em, you should get to control
+  what they do!
 
 Requirements
 ============
