@@ -51,6 +51,7 @@ G35String::G35String(uint8_t pin, uint8_t light_count)
 }
 
 void G35String::set_color(uint8_t bulb, uint8_t intensity, color_t color) {
+  bulb += bulb_zero_;
   uint8_t r, g, b;
   r = color & 0x0F;
   g = (color >> 4) & 0x0F;
@@ -112,7 +113,7 @@ void G35String::enumerate() {
 }
 
 void G35String::enumerate(bool forward) {
-  uint8_t count = light_count_;
+  uint8_t count = physical_light_count_;
   uint8_t bulb = forward ? 0 : light_count_ - 1;
   int8_t delta = forward ? 1 : -1;
   while (count--) {
