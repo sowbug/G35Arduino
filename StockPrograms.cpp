@@ -229,7 +229,8 @@ ChasingWhiteRedBlue::ChasingWhiteRedBlue(G35& g35)
   : LightProgram(g35), count_(1), sequence_(0) {}
 
 uint32_t ChasingWhiteRedBlue::Do() {
-  g35_.fill_sequence(0, count_, sequence_, 3, G35::MAX_INTENSITY, red_white_blue);
+  g35_.fill_sequence(0, count_, sequence_, 3, G35::MAX_INTENSITY,
+                     red_white_blue);
   if (count_ < light_count_) {
     ++count_;
   } else {
