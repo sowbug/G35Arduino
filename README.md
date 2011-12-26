@@ -1,7 +1,7 @@
 Introduction
 ============
 
-![G-35 Lights, Green](blob/master/images/green_lights.jpg?raw=true "G-35 Lights") Read [the blog post](http://www.deepdarc.com/2010/11/27/hacking-christmas-lights/)
+![G-35 Lights, Green](/sowbug/G35Arduino/blob/master/images/green_lights.jpg?raw=true "G-35 Lights") Read [the blog post](http://www.deepdarc.com/2010/11/27/hacking-christmas-lights/)
 that started it all.
 
 This library makes it easy to replace the controller in GE Color Effects Christmas lights with an Arduino, and to run much better light programs. If you can program C or Processing, it's pretty easy to make new programs, too!
