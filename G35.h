@@ -32,8 +32,8 @@
 #define COLOR_INDIGO          COLOR(0x6, 0, 0xf)
 #define COLOR_VIOLET          COLOR(0x8, 0, 0xf)
 
-// A virtual class representing a string of G35 lights of arbitrary length.
-// LightPrograms talk to this interface.
+// G35 is an abstract class representing a string of G35 lights of arbitrary
+// length. LightPrograms talk to this interface.
 class G35 {
  public:
   G35();

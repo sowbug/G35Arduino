@@ -13,6 +13,16 @@
 
 #include <LightProgram.h>
 
+// ProgramRunner manages a collection of LightPrograms.
+//
+// It gives the current program a slice of time to run, decides when it's
+// time to switch to the next program, and asks the program_creator callback
+// to give it the next program when it's time. In Arduino terms, it's what
+// you want to call in your loop() method.
+//
+// switch_program() is public because the application might sometimes want
+// to change programs more frequently, for example if you've implemented
+// a remote control receiver.
 class ProgramRunner {
  public:
  ProgramRunner(LightProgram* (*program_creator)(uint8_t program_index),

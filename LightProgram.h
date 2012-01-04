@@ -14,6 +14,9 @@
 #include <G35.h>
 
 // Interface for light programs.
+//
+// A "light program" is what GE means when they say their lights include 14
+// programs. An example is "Chasing Red, White, and Blue."
 class LightProgram {
  public:
  LightProgram(G35& g35)

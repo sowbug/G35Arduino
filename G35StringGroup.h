@@ -12,6 +12,12 @@
 
 #include <G35.h>
 
+// A G35StringGroup takes a set of G35 instances and presents them as a single
+// virtual light string of arbitrary length.
+//
+// A LightProgram that is given a G35StringGroup will then be able to run
+// itself over the whole virtual string, without needing to know the details
+// of which physical string contains which logical bulb.
 class G35StringGroup : public G35 {
  public:
   G35StringGroup();
