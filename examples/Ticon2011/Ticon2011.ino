@@ -23,7 +23,7 @@
 // More described below. I used this switch because I had an Arduino in the
 // house when I was writing new programs, then ran outside in the cold with my
 // laptop to reprogram the Teensy that was running the real lights.
-#define ARDUINO 1
+#define ARDUINO_HW 1
 
 #include <G35String.h>
 #include <G35StringGroup.h>
@@ -35,7 +35,7 @@
 #include <IRremote.h>
 #endif
 
-#ifdef ARDUINO
+#ifdef ARDUINO_HW
 // A regular Arduino. First string on pin 13, second on 12.
 G35String lights_1(13, 50, 50, 0, false);
 G35String lights_2(12, 41);
