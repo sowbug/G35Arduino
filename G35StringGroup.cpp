@@ -34,7 +34,7 @@ uint16_t G35StringGroup::get_light_count() {
 
 void G35StringGroup::set_color(uint8_t bulb, uint8_t intensity, color_t color) {
   uint8_t string = 0;
-  while (bulb > string_offsets_[string] && string < string_count_) {
+  while (bulb >= string_offsets_[string] && string < string_count_) {
     bulb -= string_offsets_[string++];
   }
   if (string < string_count_) {
