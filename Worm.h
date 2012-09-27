@@ -18,6 +18,8 @@ class Worm {
   Worm();
   void Do(G35& g35);
 
+  void set_color(color_t color) { color_ = color; };
+
  private:
   enum { UNIT = 2 };
 
