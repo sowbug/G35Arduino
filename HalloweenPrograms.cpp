@@ -15,6 +15,7 @@ LightProgram* HalloweenProgramGroup::CreateProgram(G35& lights,
   switch (program_index % ProgramCount) {
   case 0: return new Creepers(lights);
   case 1: return new PumpkinChase(lights);
+  case 2: return new SpookySlow(lights);
   }
 
   // not reached

@@ -14,10 +14,11 @@
 #include <LightProgram.h>
 #include <Creepers.h>
 #include <PumpkinChase.h>
+#include <SpookySlow.h>
 
 class HalloweenProgramGroup : public LightProgramGroup {
  public:
-  enum { ProgramCount = 2 };
+  enum { ProgramCount = 3 };
 
   virtual LightProgram* CreateProgram(G35& lights, uint8_t program_index);
 };

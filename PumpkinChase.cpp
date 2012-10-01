@@ -27,11 +27,11 @@ uint32_t PumpkinChase::Do() {
 
 // static
 color_t PumpkinChase::orange_green(uint16_t sequence) {
-  uint16_t s = sequence % 6;
-  if (s == 2) {
+  uint16_t s = sequence % 9;
+  if (s == 3) {
     return COLOR_ORANGE;
   }
-  if (s == 5) {
+  if (s == 6) {
     return COLOR_GREEN;
   }
   return COLOR_BLACK;
