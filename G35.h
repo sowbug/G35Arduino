@@ -28,6 +28,7 @@
 #define COLOR_YELLOW          COLOR(CHANNEL_MAX,CHANNEL_MAX, 0)
 #define COLOR_PURPLE          COLOR(0xa, 0x3, 0xd)
 #define COLOR_ORANGE          COLOR(0xf, 0x1, 0x0)
+#define COLOR_PALE_ORANGE     COLOR(0x8, 0x1, 0x0)
 #define COLOR_WARMWHITE       COLOR(0xf, 0x7, 0x2)
 #define COLOR_INDIGO          COLOR(0x6, 0, 0xf)
 #define COLOR_VIOLET          COLOR(0x8, 0, 0xf)

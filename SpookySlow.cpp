@@ -19,7 +19,8 @@ uint32_t SpookySlow::Do() {
     g35_.fill_color(0, light_count_, 255, COLOR_BLACK);
   }
   if (remaining_-- > 2) {
-    g35_.set_color(rand() % light_count_, G35::MAX_INTENSITY, COLOR_ORANGE);
+    g35_.set_color(rand() % light_count_, G35::MAX_INTENSITY,
+                   (rand() & 1) ? COLOR_ORANGE : COLOR_PALE_ORANGE);
   }
   return 1000;
 }
