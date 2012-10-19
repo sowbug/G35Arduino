@@ -87,4 +87,6 @@ Credits
 
 - [Scott Harris](http://scottrharris.blogspot.com/2010/12/controlling-ge-color-effects-lights.html)
 
+- [Mark Ortiz](https://github.com/MarkEMarkEMark), with some of Mark's code inspired by [Adafruit](http://adafruit.com/)
+
 - [Mike Tsao](http://github.com/sowbug)
