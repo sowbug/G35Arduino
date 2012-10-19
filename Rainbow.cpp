@@ -12,14 +12,15 @@
 
 #include <Rainbow.h>
 
+#define PATTERN_COUNT (8)
 Rainbow::Rainbow(G35& g35)
-  : LightProgram(g35), wait_(0), pattern_(0), step_(0) {
+  : LightProgram(g35), wait_(0), pattern_(rand() % PATTERN_COUNT), step_(0) {
 }
 
 uint32_t Rainbow::Do() {
   bool fortyEight;
   for (int i=0; i < light_count_; i++) {
-    switch (pattern_ % 8) {
+    switch (pattern_) {
     case 0:
       fortyEight = false;
       g35_.fill_color(i, 1, G35::MAX_INTENSITY,
