@@ -11,15 +11,16 @@
 #ifndef INCLUDE_G35_HALLOWEEN_PROGRAMS_H
 #define INCLUDE_G35_HALLOWEEN_PROGRAMS_H
 
-#include <LightProgram.h>
 #include <Creepers.h>
+#include <SpookyFlicker.h>
+#include <Eyes.h>
+#include <LightProgram.h>
 #include <PumpkinChase.h>
 #include <SpookySlow.h>
-#include <Eyes.h>
 
 class HalloweenProgramGroup : public LightProgramGroup {
  public:
-  enum { ProgramCount = 4 };
+  enum { ProgramCount = 5 };
 
   virtual LightProgram* CreateProgram(G35& lights, uint8_t program_index);
 };
