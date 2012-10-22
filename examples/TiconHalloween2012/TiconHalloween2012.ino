@@ -18,7 +18,7 @@
 #include <G35String.h>
 #include <G35StringGroup.h>
 #include <ProgramRunner.h>
-#include <HalloweenPrograms.h>
+#include <Programs.h>
 
 #ifdef ARDUINO_HW
 // A regular Arduino with Like A G35 shield.
@@ -34,19 +34,41 @@ G35String lights_1(12, 50, 50, 0, false);
 G35String lights_2(8, 41);
 #endif
 
-const int PROGRAM_COUNT = HalloweenProgramGroup::ProgramCount;
+class PG2 {
+ public:
+ PG2()
+   : program_count_(0) {}
 
-HalloweenProgramGroup programs;
+  typedef LightProgram* (CreateFunc)(G35 &);
+  void Add(CreateFunc *create_func) {
+    create_funcs_[program_count_++] = create_func;
+  }
+
+  LightProgram* GetNextProgram(G35 &g35, uint8_t index) {
+    return create_funcs_[index](g35);
+  }
+
+  uint8_t program_count() {
+    return program_count_;
+  }
+
+ private:
+  uint8_t program_count_;
+  CreateFunc *create_funcs_[10];
+};
+
+PG2 pg2;
 G35StringGroup string_group;
 
 LightProgram* CreateProgram(uint8_t program_index) {
-  return programs.CreateProgram(string_group, program_index);
+  return pg2.GetNextProgram(string_group, program_index);
 }
 
 // How long each program should run.
 #define PROGRAM_DURATION_SECONDS (60)
 
-ProgramRunner runner(CreateProgram, PROGRAM_COUNT, PROGRAM_DURATION_SECONDS);
+ProgramRunner runner(CreateProgram, pg2.program_count(),
+                     PROGRAM_DURATION_SECONDS);
 
 // http://www.utopiamechanicus.com/77/better-arduino-random-numbers/
 // We assume A0 and A1 are disconnected.
@@ -83,6 +105,8 @@ void setup() {
 
   string_group.AddString(&lights_1);
   string_group.AddString(&lights_2);
+
+  pg2.Add(&CreateEyes);
 }
 
 void loop() {
