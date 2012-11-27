@@ -46,7 +46,7 @@ class ProgramRunner {
 
   void switch_program() {
     uint32_t now = millis();
-    next_switch_millis_ = now + program_duration_seconds_ * 1000;
+    next_switch_millis_ = now + (uint32_t)(program_duration_seconds_) * 1000;
     next_do_millis_ = now;
     if (++program_index_ == program_count_) {
       program_index_ = 0;
