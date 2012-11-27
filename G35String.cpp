@@ -131,31 +131,41 @@ void G35String::enumerate_reverse() {
 }
 
 void G35String::do_test_patterns() {
-  const uint8_t d = 1000 / light_count_;
   const uint8_t last_light = light_count_ - 1;
-  fill_sequence(0, light_count_, 0, 1, 0, rainbow_color);
 
-  for (int i = 0; i <= MAX_INTENSITY; ++i) {
-    set_color(BROADCAST_BULB, i, COLOR_BLACK);
-    delay(1);
-  }
+  // Cycle through primaries.
+  fill_color(0, light_count_, MAX_INTENSITY, COLOR_RED);
+  delay(1000);
+  fill_color(0, light_count_, MAX_INTENSITY, COLOR_GREEN);
+  delay(1000);
+  fill_color(0, light_count_, MAX_INTENSITY, COLOR_BLUE);
+  delay(1000);
 
-  delay(500);
-
-  for (int i = MAX_INTENSITY; i >= 0; --i) {
-    set_color(BROADCAST_BULB, i, COLOR_BLACK);
-    delay(1);
-  }
-
-  for (uint8_t i = 0; i < light_count_; ++i) {
-    set_color(i, MAX_INTENSITY, COLOR_GREEN);
-    set_color(last_light - i, MAX_INTENSITY, COLOR_BLUE);
-    if (i > 0) {
-      set_color(i - 1, MAX_INTENSITY, COLOR_BLACK);
-      set_color(last_light - i + 1, MAX_INTENSITY, COLOR_BLACK);
+  // Tickle the ends. You should see three reds at the start, and three greens
+  // at the end. This confirms that you've properly configured the strand
+  // lengths and directions.
+  for (int i = 0; i < 8; ++i) {
+    for (int j = 0; j < 3; ++j) {
+      set_color(BROADCAST_BULB, 0, COLOR_BLACK);
+      set_color(j, MAX_INTENSITY, COLOR_RED);
+      set_color(last_light - j, MAX_INTENSITY, COLOR_GREEN);
+      delay(250);
     }
-    delay(d);
   }
 
+  // Full white for five seconds. If you have power problems, they'll probably
+  // show up here.
+  fill_color(0, light_count_, MAX_INTENSITY, COLOR_WHITE);
+  delay(5000);
+
+  // Cycle through secondaries.
+  fill_color(0, light_count_, MAX_INTENSITY, COLOR_YELLOW);
+  delay(1000);
+  fill_color(0, light_count_, MAX_INTENSITY, COLOR_CYAN);
+  delay(1000);
+  fill_color(0, light_count_, MAX_INTENSITY, COLOR_MAGENTA);
+  delay(1000);
+
+  // ... and get ready for the first program.
   fill_color(0, light_count_, MAX_INTENSITY, COLOR_BLACK);
 }
