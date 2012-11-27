@@ -15,7 +15,6 @@
 #include <ProgramRunner.h>
 #include <StockPrograms.h>
 #include <PlusPrograms.h>
-#include <MEOPrograms.h>
 
 // Arduino with Like A G35 shield (https://github.com/sowbug/like-a-g35).
 // First string on pin 8. Second on 9. My roofline isn't quite long enough
@@ -24,11 +23,10 @@ G35String lights_1(8, 50, 50, 0, false);
 G35String lights_2(9, 41);
 
 const int PROGRAM_COUNT = StockProgramGroup::ProgramCount +
-  PlusProgramGroup::ProgramCount + MEOProgramGroup::ProgramCount;
+  PlusProgramGroup::ProgramCount;
 
 StockProgramGroup stock_programs;
 PlusProgramGroup plus_programs;
-MEOProgramGroup meo_programs;
 G35StringGroup string_group;
 
 LightProgram* CreateProgram(uint8_t program_index) {
@@ -43,11 +41,6 @@ LightProgram* CreateProgram(uint8_t program_index) {
     return plus_programs.CreateProgram(string_group, program_index);
   }
   program_index -= PlusProgramGroup::ProgramCount;
-
-  if (program_index < MEOProgramGroup::ProgramCount) {
-    return meo_programs.CreateProgram(string_group, program_index);
-  }
-  program_index -= MEOProgramGroup::ProgramCount;
 
   return NULL;
 }
