@@ -32,32 +32,61 @@ class ProgramRunner {
     program_index_(program_count_ - 1),
     next_switch_millis_(0),
     program_creator_(program_creator),
-    program_(NULL) {}
+    program_(NULL),
+    is_switch_time_based_(true) {}
 
+  // Stops automatic, time-based switching, leaving you to call
+  // switch_program_to() yourself to switch to specific light programs. Call
+  // this once during initialization.
+  void disable_time_based_switching() {
+    is_switch_time_based_ = false;
+  }
+
+  // Calls the correct light program as often as needed (e.g., every few
+  // milliseconds or however long the program defines an animation frame to be).
+  // You should call this method as often as you can.
   void loop() {
     uint32_t now = millis();
-    if (now >= next_switch_millis_) {
+    if (is_switch_time_based() && now >= next_switch_millis_) {
       switch_program();
+    } else {
+      // This is the first loop() with manual switching. We need to have some
+      // program ready at first, so we'll pick the first one. If you don't want
+      // this behavior, just call switch_program_to() before your first loop().
+      if (program_ == NULL) {
+        switch_program_to(0);
+      }
     }
     if (now >= next_do_millis_) {
       next_do_millis_ = now + program_->Do();
     }
   }
 
-  void switch_program() {
+  // Switches to a specific light program.
+  void switch_program_to(uint8_t program_index) {
     uint32_t now = millis();
-    next_switch_millis_ = now + (uint32_t)(program_duration_seconds_) * 1000;
-    next_do_millis_ = now;
-    if (++program_index_ == program_count_) {
-      program_index_ = 0;
+    if (is_switch_time_based()) {
+      next_switch_millis_ = now + (uint32_t)(program_duration_seconds_) * 1000;
     }
+    next_do_millis_ = now;
     if (program_ != NULL) {
       delete program_;
     }
     program_ = program_creator_(program_index_);
   }
 
+  // Switches to the next light program according to the program_creator
+  // method.
+  void switch_program() {
+    switch_program_to(++program_index_);
+    if (program_index_ == program_count_) {
+      program_index_ = 0;
+    }
+  }
+
  private:
+  bool is_switch_time_based() { return is_switch_time_based_; }
+
   uint8_t program_count_;
   uint16_t program_duration_seconds_;
   uint8_t program_index_;
@@ -65,6 +94,7 @@ class ProgramRunner {
   uint32_t next_do_millis_;
   LightProgram* (*program_creator_)(uint8_t program_index);
   LightProgram* program_;
+  bool is_switch_time_based_;
 };
 
 #endif  // INCLUDE_G35_PROGRAM_RUNNER_H
