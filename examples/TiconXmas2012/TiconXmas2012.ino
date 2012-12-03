@@ -18,9 +18,9 @@
 
 // Arduino with Like A G35 shield (https://github.com/sowbug/like-a-g35).
 // First string on pin 8. Second on 9. My roofline isn't quite long enough
-// for 100 lights, so I have the final 9 hidden.
+// for 100 lights, so I have the final 10 hidden.
 G35String lights_1(8, 50, 50, 0, false);
-G35String lights_2(9, 41);
+G35String lights_2(9, 40);
 
 const int PROGRAM_COUNT = StockProgramGroup::ProgramCount +
   PlusProgramGroup::ProgramCount;
