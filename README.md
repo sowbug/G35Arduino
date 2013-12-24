@@ -78,6 +78,15 @@ We try to follow Google's C++ coding standards: 2 spaces, no tabs, 80
 columns, and follow the existing naming/capitalization conventions in the
 code.
 
+Further Reading
+-
+
+- There's a fork of this project that I've heard puts my programs to
+  shame. [Check it out](https://github.com/MarkEMarkEMark/G35-MEO-Programs).
+
+- Want to hack on the original G35 remote with your Arduino? [There's a
+  library for that](https://lukecyca.com/2013/g35-rf-remote.html).
+
 Credits
 =======
 
