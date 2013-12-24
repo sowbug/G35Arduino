@@ -72,6 +72,7 @@ class ProgramRunner {
     if (program_ != NULL) {
       delete program_;
     }
+    program_index_ = program_index;
     program_ = program_creator_(program_index_);
   }
 
